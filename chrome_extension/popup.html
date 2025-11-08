@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History Downloader</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Chrome History Downloader</h1>
+
+    <div class="controls">
+      <div class="time-range">
+        <label for="timeRange">Time Range:</label>
+        <select id="timeRange">
+          <option value="1">Last Hour</option>
+          <option value="24">Last 24 Hours</option>
+          <option value="168">Last Week</option>
+          <option value="720">Last 30 Days</option>
+          <option value="all" selected>All Time</option>
+          <option value="custom">Custom Range</option>
+        </select>
+      </div>
+
+      <div id="customRange" class="custom-range hidden">
+        <label for="startDate">From:</label>
+        <input type="datetime-local" id="startDate">
+        <label for="endDate">To:</label>
+        <input type="datetime-local" id="endDate">
+      </div>
+
+      <div class="format-selection">
+        <label for="format">Export Format:</label>
+        <select id="format">
+          <option value="json">JSON</option>
+          <option value="csv">CSV</option>
+          <option value="txt">Text</option>
+          <option value="html">HTML</option>
+        </select>
+      </div>
+
+      <div class="options">
+        <label>
+          <input type="checkbox" id="includeVisitCount" checked>
+          Include visit count
+        </label>
+        <label>
+          <input type="checkbox" id="includeTypedCount" checked>
+          Include typed count
+        </label>
+      </div>
+    </div>
+
+    <button id="downloadBtn" class="download-btn">Download History</button>
+
+    <div id="status" class="status"></div>
+    <div id="progress" class="progress hidden">
+      <div class="progress-bar"></div>
+      <span class="progress-text">0 items</span>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
