@@ -60,7 +60,7 @@ export default function Home() {
                 <span className="relative z-10">&gt; ACCESS_TERMINAL</span>
               </Link>
               <a
-                href="/api/auth/logout"
+                href="/auth/logout"
                 className="px-10 py-5 bg-transparent text-[#ff0055] border-4 border-[#ff0055] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-[#ff0055] hover:text-[#0a0a0a] hover:shadow-[0_0_30px_rgba(255,0,85,0.5)]"
               >
                 &gt; DISCONNECT
@@ -69,13 +69,13 @@ export default function Home() {
           ) : (
             <>
               <a
-                href="/api/auth/login"
+                href="/auth/login"
                 className="px-10 py-5 bg-[#ff6b35] text-[#0a0a0a] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#ff6b35] border-4 border-[#ff6b35] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)]"
               >
                 &gt; INITIALIZE
               </a>
               <a
-                href="/api/auth/login"
+                href="/auth/login"
                 className="px-10 py-5 bg-transparent text-[#ff6b35] border-4 border-[#ff6b35] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-[#ff6b35] hover:text-[#0a0a0a] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)]"
               >
                 &gt; LOGIN

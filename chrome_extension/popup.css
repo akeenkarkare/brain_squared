@@ -22,10 +22,26 @@ body {
 h1 {
   font-size: 22px;
   color: #333;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   text-align: center;
   border-bottom: 2px solid #667eea;
   padding-bottom: 10px;
+}
+
+.auto-sync-info {
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 15px;
+  padding: 8px;
+  background-color: #f0f8ff;
+  border-radius: 4px;
+  border: 1px solid #d0e8ff;
+}
+
+.last-sync {
+  color: #11998e;
+  font-weight: 500;
 }
 
 .controls {
@@ -110,10 +126,10 @@ input[type="checkbox"] {
   accent-color: #667eea;
 }
 
-.download-btn {
+.download-btn,
+.sync-btn {
   width: 100%;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   border-radius: 6px;
@@ -121,20 +137,47 @@ input[type="checkbox"] {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.download-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
 }
 
-.download-btn:hover:not(:disabled) {
+.sync-btn {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  box-shadow: 0 4px 6px rgba(17, 153, 142, 0.3);
+}
+
+.download-btn:hover:not(:disabled),
+.sync-btn:hover:not(:disabled) {
   transform: translateY(-2px);
+}
+
+.download-btn:hover:not(:disabled) {
   box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
 }
 
-.download-btn:active:not(:disabled) {
+.sync-btn:hover:not(:disabled) {
+  box-shadow: 0 6px 12px rgba(17, 153, 142, 0.4);
+}
+
+.download-btn:active:not(:disabled),
+.sync-btn:active:not(:disabled) {
   transform: translateY(0);
+}
+
+.download-btn:active:not(:disabled) {
   box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
 }
 
-.download-btn:disabled {
+.sync-btn:active:not(:disabled) {
+  box-shadow: 0 2px 4px rgba(17, 153, 142, 0.3);
+}
+
+.download-btn:disabled,
+.sync-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   background: #ccc;

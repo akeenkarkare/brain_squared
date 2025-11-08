@@ -96,7 +96,7 @@ export default function ChatPage() {
       <div className="absolute inset-0 scanlines pointer-events-none"></div>
 
       {/* Header */}
-      <header className="relative z-20 border-b-4 border-[#ff6b35] bg-[#1a1a1a] px-4 py-4 shadow-[0_0_30px_rgba(0,255,136,0.2)]">
+      <header className="relative z-20 border-b-4 border-[#ff6b35] bg-[#1a1a1a] px-4 py-4 shadow-[0_0_30px_rgba(255,107,53,0.2)]">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-gradient-to-br from-[#ff6b35] to-[#ff9e00] flex items-center justify-center font-bold text-2xl text-[#0a0a0a] border-2 border-[#ff6b35]">
@@ -120,7 +120,7 @@ export default function ChatPage() {
               &gt; CLEAR
             </button>
             <a
-              href="/api/auth/logout"
+              href="/auth/logout"
               className="px-4 py-2 text-sm font-mono font-bold text-[#ff0055] border-2 border-[#ff0055] hover:bg-[#ff0055] hover:text-[#0a0a0a] transition-all duration-300 uppercase tracking-wider"
             >
               &gt; LOGOUT
@@ -197,7 +197,7 @@ export default function ChatPage() {
       </main>
 
       {/* Input Area */}
-      <footer className="relative z-20 border-t-4 border-[#ff6b35] bg-[#1a1a1a] px-4 py-4 shadow-[0_0_30px_rgba(0,255,136,0.2)]">
+      <footer className="relative z-20 border-t-4 border-[#ff6b35] bg-[#1a1a1a] px-4 py-4 shadow-[0_0_30px_rgba(255,107,53,0.2)]">
         <div className="max-w-4xl mx-auto">
           <form onSubmit={handleSubmit} className="flex gap-3">
             <div className="flex-1 relative">
@@ -210,13 +210,13 @@ export default function ChatPage() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Enter command..."
                 disabled={isLoading}
-                className="w-full pl-10 pr-4 py-4 bg-[#0a0a0a] border-2 border-[#ff6b35] text-white font-mono focus:outline-none focus:border-[#ff9e00] focus:shadow-[0_0_20px_rgba(0,217,255,0.3)] transition-all duration-300 disabled:opacity-50 placeholder:text-[#a0a0a0]"
+                className="w-full pl-10 pr-4 py-4 bg-[#0a0a0a] border-2 border-[#ff6b35] text-white font-mono focus:outline-none focus:border-[#ff9e00] focus:shadow-[0_0_20px_rgba(255,158,0,0.3)] transition-all duration-300 disabled:opacity-50 placeholder:text-[#a0a0a0]"
               />
             </div>
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="px-8 py-4 bg-[#ff6b35] text-[#0a0a0a] border-4 border-[#ff6b35] font-mono font-bold uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#ff6b35] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-8 py-4 bg-[#ff6b35] text-[#0a0a0a] border-4 border-[#ff6b35] font-mono font-bold uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#ff6b35] hover:shadow-[0_0_30px_rgba(255,107,53,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               <span>&gt; SEND</span>
               <svg

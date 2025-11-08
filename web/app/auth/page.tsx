@@ -49,7 +49,7 @@ export default function AuthPage() {
               </p>
 
               <a
-                href="/api/auth/login"
+                href="/auth/login"
                 className="block w-full py-4 bg-[#ff6b35] text-[#0a0a0a] border-4 border-[#ff6b35] font-mono font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#ff6b35] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)]"
               >
                 &gt; SIGN IN / REGISTER

@@ -8,7 +8,12 @@
 </head>
 <body>
   <div class="container">
-    <h1>Chrome History Downloader</h1>
+    <h1>Brain Squared</h1>
+    <div id="autoSyncInfo" class="auto-sync-info">
+      Auto-sync: Every 2 hours
+      <br>
+      <span id="lastSyncTime" class="last-sync">Checking...</span>
+    </div>
 
     <div class="controls">
       <div class="time-range">
@@ -53,6 +58,7 @@
     </div>
 
     <button id="downloadBtn" class="download-btn">Download History</button>
+    <button id="syncBtn" class="sync-btn">Sync to Brain Squared</button>
 
     <div id="status" class="status"></div>
     <div id="progress" class="progress hidden">

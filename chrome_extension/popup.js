@@ -7,10 +7,52 @@ const formatSelect = document.getElementById('format');
 const includeVisitCountCheckbox = document.getElementById('includeVisitCount');
 const includeTypedCountCheckbox = document.getElementById('includeTypedCount');
 const downloadBtn = document.getElementById('downloadBtn');
+const syncBtn = document.getElementById('syncBtn');
 const statusDiv = document.getElementById('status');
 const progressDiv = document.getElementById('progress');
 const progressBar = progressDiv.querySelector('.progress-bar');
 const progressText = progressDiv.querySelector('.progress-text');
+const lastSyncTimeSpan = document.getElementById('lastSyncTime');
+
+// Backend API URL (change this to your deployed backend URL when ready)
+const BACKEND_URL = 'http://localhost:3000';
+
+// Load and display last sync time on popup open
+async function updateLastSyncTime() {
+  try {
+    const response = await chrome.runtime.sendMessage({ action: 'getLastSyncTime' });
+    const lastSyncTime = response.lastSyncTime;
+
+    if (lastSyncTime && lastSyncTime > 0) {
+      const date = new Date(lastSyncTime);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMins / 60);
+      const diffDays = Math.floor(diffHours / 24);
+
+      let timeAgo;
+      if (diffMins < 1) {
+        timeAgo = 'Just now';
+      } else if (diffMins < 60) {
+        timeAgo = `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+      } else if (diffHours < 24) {
+        timeAgo = `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+      } else {
+        timeAgo = `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+      }
+
+      lastSyncTimeSpan.textContent = `Last synced: ${timeAgo}`;
+    } else {
+      lastSyncTimeSpan.textContent = 'Never synced - Click "Sync" below';
+    }
+  } catch (error) {
+    lastSyncTimeSpan.textContent = 'Auto-sync enabled';
+  }
+}
+
+// Update last sync time when popup opens
+updateLastSyncTime();
 
 // Show/hide custom date range
 timeRangeSelect.addEventListener('change', () => {
@@ -314,4 +356,98 @@ function downloadFile(content, fileName, format) {
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
   });
+}
+
+// Sync button click handler
+syncBtn.addEventListener('click', async () => {
+  try {
+    syncBtn.disabled = true;
+    downloadBtn.disabled = true;
+    statusDiv.textContent = 'Fetching history...';
+    statusDiv.className = 'status';
+    progressDiv.classList.remove('hidden');
+
+    // Get time range
+    const { startTime, endTime } = getTimeRange();
+
+    // Fetch history
+    const historyItems = await fetchHistory(startTime, endTime);
+
+    if (historyItems.length === 0) {
+      statusDiv.textContent = 'No history found for the selected time range.';
+      statusDiv.className = 'status warning';
+      progressDiv.classList.add('hidden');
+      syncBtn.disabled = false;
+      downloadBtn.disabled = false;
+      return;
+    }
+
+    statusDiv.textContent = `Found ${historyItems.length} items. Syncing to Brain Squared...`;
+
+    // Sync to backend
+    await syncToBackend(historyItems);
+
+    statusDiv.textContent = `Successfully synced ${historyItems.length} items to Brain Squared!`;
+    statusDiv.className = 'status success';
+
+  } catch (error) {
+    console.error('Error syncing history:', error);
+    statusDiv.textContent = `Error: ${error.message}`;
+    statusDiv.className = 'status error';
+  } finally {
+    syncBtn.disabled = false;
+    downloadBtn.disabled = false;
+    setTimeout(() => {
+      progressDiv.classList.add('hidden');
+    }, 2000);
+  }
+});
+
+// Sync history to backend
+async function syncToBackend(historyItems) {
+  const BATCH_SIZE = 500; // Send 500 items at a time
+  const totalBatches = Math.ceil(historyItems.length / BATCH_SIZE);
+
+  for (let i = 0; i < totalBatches; i++) {
+    const start = i * BATCH_SIZE;
+    const end = Math.min(start + BATCH_SIZE, historyItems.length);
+    const batch = historyItems.slice(start, end);
+
+    statusDiv.textContent = `Syncing batch ${i + 1}/${totalBatches}...`;
+    progressBar.style.width = `${((i + 1) / totalBatches) * 100}%`;
+    progressText.textContent = `${end}/${historyItems.length} items`;
+
+    // Prepare data for backend
+    const payload = batch.map(item => ({
+      url: item.url,
+      title: item.title || 'Untitled',
+      lastVisitTime: item.lastVisitTime,
+      visitCount: item.visitCount || 0,
+      typedCount: item.typedCount || 0
+    }));
+
+    // Send to backend
+    const response = await fetch(`${BACKEND_URL}/api/history/upload`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ items: payload })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to sync to backend');
+    }
+
+    const result = await response.json();
+    console.log(`Batch ${i + 1} synced:`, result);
+
+    // Small delay between batches to avoid overwhelming the server
+    if (i < totalBatches - 1) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+  }
+
+  progressBar.style.width = '100%';
 }
