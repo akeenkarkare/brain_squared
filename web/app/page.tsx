@@ -55,7 +55,7 @@ export default function Home() {
             <>
               <Link
                 href="/chat"
-                className="group relative px-10 py-5 bg-[#ff6b35] text-[#0a0a0a] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#ff6b35] border-4 border-[#ff6b35] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)] overflow-hidden"
+                className="group relative px-10 py-5 bg-[#ff6b35] text-[#0a0a0a] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#ff6b35] border-4 border-[#ff6b35] hover:shadow-[0_0_30px_rgba(255,107,53,0.5)] overflow-hidden"
               >
                 <span className="relative z-10">&gt; ACCESS_TERMINAL</span>
               </Link>
@@ -69,14 +69,14 @@ export default function Home() {
           ) : (
             <>
               <Link
-                href="/auth"
-                className="px-10 py-5 bg-[#ff6b35] text-[#0a0a0a] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#ff6b35] border-4 border-[#ff6b35] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)]"
+                href="/get-started"
+                className="px-10 py-5 bg-[#ff6b35] text-[#0a0a0a] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#ff6b35] border-4 border-[#ff6b35] hover:shadow-[0_0_30px_rgba(255,107,53,0.5)]"
               >
-                &gt; INITIALIZE
+                &gt; GET STARTED
               </Link>
               <Link
                 href="/auth"
-                className="px-10 py-5 bg-transparent text-[#ff6b35] border-4 border-[#ff6b35] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-[#ff6b35] hover:text-[#0a0a0a] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)]"
+                className="px-10 py-5 bg-transparent text-[#ff6b35] border-4 border-[#ff6b35] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-[#ff6b35] hover:text-[#0a0a0a] hover:shadow-[0_0_30px_rgba(255,107,53,0.5)]"
               >
                 &gt; LOGIN
               </Link>

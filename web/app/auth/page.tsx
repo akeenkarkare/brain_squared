@@ -95,7 +95,7 @@ export default function AuthPage() {
           </div>
 
           {/* Main Card */}
-          <div className="border-4 border-[#ff6b35] bg-[#1a1a1a] p-8 shadow-[0_0_50px_rgba(0,255,136,0.3)]">
+          <div className="border-4 border-[#ff6b35] bg-[#1a1a1a] p-8 shadow-[0_0_50px_rgba(255,107,53,0.3)]">
             {/* Mode Toggle */}
             <div className="flex mb-8 border-2 border-[#ff6b35]">
               <button
@@ -142,7 +142,7 @@ export default function AuthPage() {
                     value={formData.name}
                     onChange={handleChange}
                     required={!isLogin}
-                    className="w-full px-4 py-3 bg-[#0a0a0a] border-2 border-[#ff6b35] text-white font-mono focus:outline-none focus:border-[#ff9e00] focus:shadow-[0_0_20px_rgba(0,217,255,0.3)] transition-all duration-300"
+                    className="w-full px-4 py-3 bg-[#0a0a0a] border-2 border-[#ff6b35] text-white font-mono focus:outline-none focus:border-[#ff9e00] focus:shadow-[0_0_20px_rgba(255,158,0,0.3)] transition-all duration-300"
                     placeholder="ENTER_USERNAME"
                   />
                 </div>
@@ -158,7 +158,7 @@ export default function AuthPage() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-[#0a0a0a] border-2 border-[#ff6b35] text-white font-mono focus:outline-none focus:border-[#ff9e00] focus:shadow-[0_0_20px_rgba(0,217,255,0.3)] transition-all duration-300"
+                  className="w-full px-4 py-3 bg-[#0a0a0a] border-2 border-[#ff6b35] text-white font-mono focus:outline-none focus:border-[#ff9e00] focus:shadow-[0_0_20px_rgba(255,158,0,0.3)] transition-all duration-300"
                   placeholder="user@system.net"
                 />
               </div>
@@ -173,7 +173,7 @@ export default function AuthPage() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-[#0a0a0a] border-2 border-[#ff6b35] text-white font-mono focus:outline-none focus:border-[#ff9e00] focus:shadow-[0_0_20px_rgba(0,217,255,0.3)] transition-all duration-300"
+                  className="w-full px-4 py-3 bg-[#0a0a0a] border-2 border-[#ff6b35] text-white font-mono focus:outline-none focus:border-[#ff9e00] focus:shadow-[0_0_20px_rgba(255,158,0,0.3)] transition-all duration-300"
                   placeholder="••••••••"
                 />
               </div>
@@ -189,7 +189,7 @@ export default function AuthPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required={!isLogin}
-                    className="w-full px-4 py-3 bg-[#0a0a0a] border-2 border-[#ff6b35] text-white font-mono focus:outline-none focus:border-[#ff9e00] focus:shadow-[0_0_20px_rgba(0,217,255,0.3)] transition-all duration-300"
+                    className="w-full px-4 py-3 bg-[#0a0a0a] border-2 border-[#ff6b35] text-white font-mono focus:outline-none focus:border-[#ff9e00] focus:shadow-[0_0_20px_rgba(255,158,0,0.3)] transition-all duration-300"
                     placeholder="••••••••"
                   />
                 </div>
@@ -198,7 +198,7 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-4 bg-[#ff6b35] text-[#0a0a0a] border-4 border-[#ff6b35] font-mono font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#ff6b35] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                className="w-full py-4 bg-[#ff6b35] text-[#0a0a0a] border-4 border-[#ff6b35] font-mono font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#ff6b35] hover:shadow-[0_0_30px_rgba(255,107,53,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
               >
                 {isLoading ? (
                   <>
