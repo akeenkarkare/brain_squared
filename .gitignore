@@ -37,3 +37,7 @@ yarn-error.log*
 next-env.d.ts
 
 /.claude/
+
+/backend/node_modules
+/web/node_modules
+/chrome_extension/node_modules
