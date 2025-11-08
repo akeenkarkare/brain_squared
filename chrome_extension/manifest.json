@@ -1,12 +1,18 @@
 {
   "manifest_version": 3,
-  "name": "History Downloader",
-  "version": "1.0",
-  "description": "Download and save your Chrome browsing history",
+  "name": "Brain Squared - Second Memory",
+  "version": "2.0",
+  "description": "Automatically sync your browsing history to your second brain with semantic search",
   "permissions": [
     "history",
-    "downloads"
+    "downloads",
+    "alarms",
+    "storage",
+    "notifications"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
