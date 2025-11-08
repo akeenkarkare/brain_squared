@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext";
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 export default function Home() {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { user, isLoading } = useUser();
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-[#0a0a0a]">
@@ -31,10 +31,10 @@ export default function Home() {
             BRAIN<sup className="text-[#ff6b35] text-4xl">²</sup>
           </h1>
 
-          {isAuthenticated && user && (
+          {user && (
             <div className="border-2 border-[#ff6b35] bg-[#0a0a0a] px-6 py-3 inline-block">
               <span className="text-[#ff6b35] font-mono text-lg">
-                &gt; USER: <span className="text-white font-bold">{user.name.toUpperCase()}</span>
+                &gt; USER: <span className="text-white font-bold">{(user.name || user.email || 'USER').toUpperCase()}</span>
               </span>
             </div>
           )}
@@ -42,7 +42,7 @@ export default function Home() {
 
         {/* Tagline */}
         <p className="text-xl md:text-2xl mb-16 text-[#a0a0a0] max-w-2xl text-center font-mono">
-          {isAuthenticated ? (
+          {user ? (
             <span className="text-[#ff6b35]">&gt; NEURAL_LINK_ESTABLISHED</span>
           ) : (
             <span>&gt; Next-Gen AI Interface</span>
@@ -51,7 +51,7 @@ export default function Home() {
 
         {/* CTA Buttons */}
         <div className="flex gap-6 justify-center flex-wrap">
-          {isAuthenticated ? (
+          {user ? (
             <>
               <Link
                 href="/chat"
@@ -59,27 +59,27 @@ export default function Home() {
               >
                 <span className="relative z-10">&gt; ACCESS_TERMINAL</span>
               </Link>
-              <button
-                onClick={logout}
+              <a
+                href="/api/auth/logout"
                 className="px-10 py-5 bg-transparent text-[#ff0055] border-4 border-[#ff0055] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-[#ff0055] hover:text-[#0a0a0a] hover:shadow-[0_0_30px_rgba(255,0,85,0.5)]"
               >
                 &gt; DISCONNECT
-              </button>
+              </a>
             </>
           ) : (
             <>
-              <Link
-                href="/auth"
+              <a
+                href="/api/auth/login"
                 className="px-10 py-5 bg-[#ff6b35] text-[#0a0a0a] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#ff6b35] border-4 border-[#ff6b35] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)]"
               >
                 &gt; INITIALIZE
-              </Link>
-              <Link
-                href="/auth"
+              </a>
+              <a
+                href="/api/auth/login"
                 className="px-10 py-5 bg-transparent text-[#ff6b35] border-4 border-[#ff6b35] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-[#ff6b35] hover:text-[#0a0a0a] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)]"
               >
                 &gt; LOGIN
-              </Link>
+              </a>
             </>
           )}
         </div>

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 interface Message {
   id: string;
@@ -12,7 +12,7 @@ interface Message {
 }
 
 export default function ChatPage() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user } = useUser();
   const router = useRouter();
 
   const [messages, setMessages] = useState<Message[]>([
@@ -27,12 +27,6 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/auth");
-    }
-  }, [isAuthenticated, router]);
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -40,10 +34,6 @@ export default function ChatPage() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  if (!isAuthenticated) {
-    return null;
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,15 +119,12 @@ export default function ChatPage() {
             >
               &gt; CLEAR
             </button>
-            <button
-              onClick={() => {
-                logout();
-                router.push("/");
-              }}
+            <a
+              href="/api/auth/logout"
               className="px-4 py-2 text-sm font-mono font-bold text-[#ff0055] border-2 border-[#ff0055] hover:bg-[#ff0055] hover:text-[#0a0a0a] transition-all duration-300 uppercase tracking-wider"
             >
               &gt; LOGOUT
-            </button>
+            </a>
           </div>
         </div>
       </header>
