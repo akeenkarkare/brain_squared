@@ -7,54 +7,90 @@ export default function Home() {
   const { isAuthenticated, user, logout } = useAuth();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-      <main className="text-center px-4">
-        <h1 className="text-5xl font-bold mb-6 text-gray-900 dark:text-white">
-          Welcome to Brain Squared
-          {isAuthenticated && user && (
-            <span className="block text-2xl mt-4 text-blue-600 dark:text-blue-400">
-              Hello, {user.name}!
+    <div className="min-h-screen relative overflow-hidden bg-[#0a0a0a]">
+      {/* Retro grid background */}
+      <div className="absolute inset-0 retro-grid opacity-30"></div>
+
+      {/* Scanlines overlay */}
+      <div className="absolute inset-0 scanlines"></div>
+
+      {/* Animated gradient orbs */}
+      <div className="absolute top-20 left-20 w-96 h-96 bg-[#00ff88] rounded-full blur-[120px] opacity-20 animate-pulse"></div>
+      <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#ff00ff] rounded-full blur-[120px] opacity-20 animate-pulse delay-1000"></div>
+
+      <main className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
+        {/* Logo/Header */}
+        <div className="mb-12">
+          <div className="inline-block border-4 border-[#00ff88] px-6 py-2 mb-8 corner-cut">
+            <span className="text-[#00ff88] font-mono text-sm font-bold tracking-[0.3em]">
+              SYSTEM_ONLINE
             </span>
+          </div>
+
+          <h1 className="text-7xl md:text-8xl font-bold mb-6 glow-text text-white tracking-tight">
+            BRAIN<sup className="text-[#00ff88] text-4xl">²</sup>
+          </h1>
+
+          {isAuthenticated && user && (
+            <div className="border-2 border-[#00ff88] bg-[#0a0a0a] px-6 py-3 inline-block">
+              <span className="text-[#00ff88] font-mono text-lg">
+                &gt; USER: <span className="text-white font-bold">{user.name.toUpperCase()}</span>
+              </span>
+            </div>
           )}
-        </h1>
-        <p className="text-xl mb-12 text-gray-700 dark:text-gray-300 max-w-2xl">
-          {isAuthenticated
-            ? "Ready to chat with your AI assistant?"
-            : "Your intelligent conversation platform"}
+        </div>
+
+        {/* Tagline */}
+        <p className="text-xl md:text-2xl mb-16 text-[#a0a0a0] max-w-2xl text-center font-mono">
+          {isAuthenticated ? (
+            <span className="text-[#00ff88]">&gt; NEURAL_LINK_ESTABLISHED</span>
+          ) : (
+            <span>&gt; Next-Gen AI Interface</span>
+          )}
         </p>
 
+        {/* CTA Buttons */}
         <div className="flex gap-6 justify-center flex-wrap">
           {isAuthenticated ? (
             <>
               <Link
                 href="/chat"
-                className="px-8 py-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg"
+                className="group relative px-10 py-5 bg-[#00ff88] text-[#0a0a0a] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#00ff88] border-4 border-[#00ff88] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)] overflow-hidden"
               >
-                Go to Chat
+                <span className="relative z-10">&gt; ACCESS_TERMINAL</span>
               </Link>
               <button
                 onClick={logout}
-                className="px-8 py-4 bg-white text-red-600 border-2 border-red-600 rounded-lg font-semibold hover:bg-red-50 transition-colors shadow-lg"
+                className="px-10 py-5 bg-transparent text-[#ff0055] border-4 border-[#ff0055] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-[#ff0055] hover:text-[#0a0a0a] hover:shadow-[0_0_30px_rgba(255,0,85,0.5)]"
               >
-                Logout
+                &gt; DISCONNECT
               </button>
             </>
           ) : (
             <>
               <Link
                 href="/auth"
-                className="px-8 py-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg"
+                className="px-10 py-5 bg-[#00ff88] text-[#0a0a0a] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#00ff88] border-4 border-[#00ff88] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)]"
               >
-                Get Started
+                &gt; INITIALIZE
               </Link>
               <Link
                 href="/auth"
-                className="px-8 py-4 bg-white text-blue-600 border-2 border-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors shadow-lg"
+                className="px-10 py-5 bg-transparent text-[#00ff88] border-4 border-[#00ff88] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-[#00ff88] hover:text-[#0a0a0a] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)]"
               >
-                Sign In
+                &gt; LOGIN
               </Link>
             </>
           )}
+        </div>
+
+        {/* Status bar */}
+        <div className="mt-20 border-t-2 border-[#00ff88] pt-6 max-w-4xl w-full">
+          <div className="flex justify-between items-center text-[#00ff88] font-mono text-sm">
+            <span>&gt; STATUS: OPERATIONAL</span>
+            <span className="hidden md:block">&gt; LATENCY: {Math.floor(Math.random() * 50)}ms</span>
+            <span>&gt; UPTIME: 99.9%</span>
+          </div>
         </div>
       </main>
     </div>
