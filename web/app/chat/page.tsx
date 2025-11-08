@@ -106,17 +106,17 @@ export default function ChatPage() {
       <div className="absolute inset-0 scanlines pointer-events-none"></div>
 
       {/* Header */}
-      <header className="relative z-20 border-b-4 border-[#00ff88] bg-[#1a1a1a] px-4 py-4 shadow-[0_0_30px_rgba(0,255,136,0.2)]">
+      <header className="relative z-20 border-b-4 border-[#ff6b35] bg-[#1a1a1a] px-4 py-4 shadow-[0_0_30px_rgba(0,255,136,0.2)]">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#00ff88] to-[#00d9ff] flex items-center justify-center font-bold text-2xl text-[#0a0a0a] border-2 border-[#00ff88]">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#ff6b35] to-[#ff9e00] flex items-center justify-center font-bold text-2xl text-[#0a0a0a] border-2 border-[#ff6b35]">
               B²
             </div>
             <div>
               <h1 className="text-xl font-bold text-white font-mono tracking-wider">
-                BRAIN<sup className="text-[#00ff88] text-sm">²</sup> TERMINAL
+                BRAIN<sup className="text-[#ff6b35] text-sm">²</sup> TERMINAL
               </h1>
-              <p className="text-[#00ff88] font-mono text-xs">
+              <p className="text-[#ff6b35] font-mono text-xs">
                 &gt; USER: {user?.name?.toUpperCase() || user?.email?.toUpperCase()}
               </p>
             </div>
@@ -125,7 +125,7 @@ export default function ChatPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={handleClearChat}
-              className="px-4 py-2 text-sm font-mono font-bold text-[#00d9ff] border-2 border-[#00d9ff] hover:bg-[#00d9ff] hover:text-[#0a0a0a] transition-all duration-300 uppercase tracking-wider"
+              className="px-4 py-2 text-sm font-mono font-bold text-[#ff9e00] border-2 border-[#ff9e00] hover:bg-[#ff9e00] hover:text-[#0a0a0a] transition-all duration-300 uppercase tracking-wider"
             >
               &gt; CLEAR
             </button>
@@ -143,7 +143,7 @@ export default function ChatPage() {
       </header>
 
       {/* Messages Container */}
-      <main className="relative z-10 flex-1 overflow-y-auto px-4 py-6 scrollbar-thin scrollbar-thumb-[#00ff88] scrollbar-track-[#1a1a1a]">
+      <main className="relative z-10 flex-1 overflow-y-auto px-4 py-6 scrollbar-thin scrollbar-thumb-[#ff6b35] scrollbar-track-[#1a1a1a]">
         <div className="max-w-4xl mx-auto space-y-6">
           {messages.map((message) => (
             <div
@@ -153,7 +153,7 @@ export default function ChatPage() {
               }`}
             >
               {message.role === "assistant" && (
-                <div className="w-10 h-10 flex-shrink-0 bg-gradient-to-br from-[#00ff88] to-[#00d9ff] flex items-center justify-center border-2 border-[#00ff88] font-bold text-[#0a0a0a]">
+                <div className="w-10 h-10 flex-shrink-0 bg-gradient-to-br from-[#ff6b35] to-[#ff9e00] flex items-center justify-center border-2 border-[#ff6b35] font-bold text-[#0a0a0a]">
                   AI
                 </div>
               )}
@@ -166,8 +166,8 @@ export default function ChatPage() {
                 <div
                   className={`px-5 py-4 font-mono text-sm border-2 ${
                     message.role === "user"
-                      ? "bg-[#00ff88] bg-opacity-10 border-[#00ff88] text-white"
-                      : "bg-[#1a1a1a] border-[#00d9ff] text-[#ffffff]"
+                      ? "bg-[#ff6b35] bg-opacity-10 border-[#ff6b35] text-white"
+                      : "bg-[#1a1a1a] border-[#ff9e00] text-[#ffffff]"
                   }`}
                 >
                   <p className="leading-relaxed whitespace-pre-wrap">{message.content}</p>
@@ -182,7 +182,7 @@ export default function ChatPage() {
               </div>
 
               {message.role === "user" && (
-                <div className="w-10 h-10 flex-shrink-0 bg-[#00ff88] border-2 border-[#00ff88] flex items-center justify-center font-bold text-[#0a0a0a] order-3">
+                <div className="w-10 h-10 flex-shrink-0 bg-[#ff6b35] border-2 border-[#ff6b35] flex items-center justify-center font-bold text-[#0a0a0a] order-3">
                   U
                 </div>
               )}
@@ -191,14 +191,14 @@ export default function ChatPage() {
 
           {isLoading && (
             <div className="flex gap-4 justify-start">
-              <div className="w-10 h-10 flex-shrink-0 bg-gradient-to-br from-[#00ff88] to-[#00d9ff] flex items-center justify-center border-2 border-[#00ff88] font-bold text-[#0a0a0a] animate-pulse">
+              <div className="w-10 h-10 flex-shrink-0 bg-gradient-to-br from-[#ff6b35] to-[#ff9e00] flex items-center justify-center border-2 border-[#ff6b35] font-bold text-[#0a0a0a] animate-pulse">
                 AI
               </div>
-              <div className="bg-[#1a1a1a] border-2 border-[#00d9ff] px-5 py-4 max-w-[70%]">
-                <div className="flex gap-2 items-center font-mono text-[#00d9ff]">
-                  <div className="w-2 h-2 bg-[#00d9ff] rounded-full animate-pulse"></div>
-                  <div className="w-2 h-2 bg-[#00d9ff] rounded-full animate-pulse delay-150"></div>
-                  <div className="w-2 h-2 bg-[#00d9ff] rounded-full animate-pulse delay-300"></div>
+              <div className="bg-[#1a1a1a] border-2 border-[#ff9e00] px-5 py-4 max-w-[70%]">
+                <div className="flex gap-2 items-center font-mono text-[#ff9e00]">
+                  <div className="w-2 h-2 bg-[#ff9e00] rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-[#ff9e00] rounded-full animate-pulse delay-150"></div>
+                  <div className="w-2 h-2 bg-[#ff9e00] rounded-full animate-pulse delay-300"></div>
                   <span className="ml-2">PROCESSING...</span>
                 </div>
               </div>
@@ -210,11 +210,11 @@ export default function ChatPage() {
       </main>
 
       {/* Input Area */}
-      <footer className="relative z-20 border-t-4 border-[#00ff88] bg-[#1a1a1a] px-4 py-4 shadow-[0_0_30px_rgba(0,255,136,0.2)]">
+      <footer className="relative z-20 border-t-4 border-[#ff6b35] bg-[#1a1a1a] px-4 py-4 shadow-[0_0_30px_rgba(0,255,136,0.2)]">
         <div className="max-w-4xl mx-auto">
           <form onSubmit={handleSubmit} className="flex gap-3">
             <div className="flex-1 relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#00ff88] font-mono font-bold">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#ff6b35] font-mono font-bold">
                 &gt;
               </span>
               <input
@@ -223,13 +223,13 @@ export default function ChatPage() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Enter command..."
                 disabled={isLoading}
-                className="w-full pl-10 pr-4 py-4 bg-[#0a0a0a] border-2 border-[#00ff88] text-white font-mono focus:outline-none focus:border-[#00d9ff] focus:shadow-[0_0_20px_rgba(0,217,255,0.3)] transition-all duration-300 disabled:opacity-50 placeholder:text-[#a0a0a0]"
+                className="w-full pl-10 pr-4 py-4 bg-[#0a0a0a] border-2 border-[#ff6b35] text-white font-mono focus:outline-none focus:border-[#ff9e00] focus:shadow-[0_0_20px_rgba(0,217,255,0.3)] transition-all duration-300 disabled:opacity-50 placeholder:text-[#a0a0a0]"
               />
             </div>
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="px-8 py-4 bg-[#00ff88] text-[#0a0a0a] border-4 border-[#00ff88] font-mono font-bold uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#00ff88] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-8 py-4 bg-[#ff6b35] text-[#0a0a0a] border-4 border-[#ff6b35] font-mono font-bold uppercase tracking-wider transition-all duration-300 hover:bg-transparent hover:text-[#ff6b35] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               <span>&gt; SEND</span>
               <svg
@@ -249,15 +249,15 @@ export default function ChatPage() {
           </form>
 
           {/* Status Bar */}
-          <div className="mt-4 flex justify-between items-center border-t-2 border-[#00ff88] pt-3">
+          <div className="mt-4 flex justify-between items-center border-t-2 border-[#ff6b35] pt-3">
             <p className="text-[#a0a0a0] font-mono text-xs">
-              &gt; STATUS: <span className="text-[#00ff88]">CONNECTED</span>
+              &gt; STATUS: <span className="text-[#ff6b35]">CONNECTED</span>
             </p>
             <p className="text-[#a0a0a0] font-mono text-xs hidden sm:block">
-              &gt; MESSAGES: <span className="text-[#00ff88]">{messages.length}</span>
+              &gt; MESSAGES: <span className="text-[#ff6b35]">{messages.length}</span>
             </p>
             <p className="text-[#a0a0a0] font-mono text-xs">
-              &gt; LATENCY: <span className="text-[#00ff88]">{Math.floor(Math.random() * 50)}ms</span>
+              &gt; LATENCY: <span className="text-[#ff6b35]">{Math.floor(Math.random() * 50)}ms</span>
             </p>
           </div>
         </div>

@@ -5,19 +5,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
 
 :root {
-  /* Modern Nostalgia - Light Mode */
+  /* Modern Nostalgia - Orange & Purple Theme */
   --background: #0a0a0a;
   --foreground: #ffffff;
-  --primary: #00ff88;
-  --secondary: #ff00ff;
-  --accent: #00d9ff;
+  --primary: #ff6b35;
+  --secondary: #9d4edd;
+  --accent: #ff9e00;
   --warning: #ffff00;
   --danger: #ff0055;
   --surface: #1a1a1a;
   --surface-elevated: #2a2a2a;
-  --border: #00ff88;
+  --border: #ff6b35;
   --text-muted: #a0a0a0;
-  --glow: rgba(0, 255, 136, 0.3);
+  --glow: rgba(255, 107, 53, 0.3);
 }
 
 body {
@@ -55,8 +55,8 @@ code, pre, .mono {
   /* Retro grid background */
   .retro-grid {
     background-image:
-      linear-gradient(rgba(0, 255, 136, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 255, 136, 0.05) 1px, transparent 1px);
+      linear-gradient(rgba(255, 107, 53, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 107, 53, 0.05) 1px, transparent 1px);
     background-size: 50px 50px;
   }
 
