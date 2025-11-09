@@ -10,6 +10,7 @@ export default function Home() {
   const [latency, setLatency] = useState(0);
   const [extensionInstalled, setExtensionInstalled] = useState<boolean | null>(null);
   const [showExtensionModal, setShowExtensionModal] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
     setLatency(Math.floor(Math.random() * 50));
@@ -167,12 +168,12 @@ export default function Home() {
 
       {/* Extension Modal */}
       {showExtensionModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-[#1a1a1a] border-4 border-[#ff6b35] p-8 max-w-2xl w-full mx-4 shadow-[0_0_40px_rgba(255,107,53,0.5)] relative my-8">
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] border-4 border-[#ff6b35] p-8 max-w-md w-full mx-4 shadow-[0_0_40px_rgba(255,107,53,0.5)] relative">
             {/* Close button */}
             <button
               onClick={() => setShowExtensionModal(false)}
-              className="absolute top-4 right-4 text-[#ff6b35] hover:text-white text-2xl font-bold transition-colors duration-200"
+              className="absolute top-4 right-4 text-[#ff6b35] hover:text-white text-3xl font-bold transition-colors duration-200 z-10"
               aria-label="Close"
             >
               ×
@@ -193,57 +194,48 @@ export default function Home() {
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
+                setShowInstructions(true);
               }}
-              className="w-full px-6 py-3 mb-6 bg-[#ff6b35] text-[#0a0a0a] font-bold uppercase tracking-wider border-2 border-[#ff6b35] hover:bg-transparent hover:text-[#ff6b35] transition-all duration-300 font-mono"
+              className="w-full px-6 py-3 mb-4 bg-[#ff6b35] text-[#0a0a0a] font-bold uppercase tracking-wider border-2 border-[#ff6b35] hover:bg-transparent hover:text-[#ff6b35] transition-all duration-300 font-mono"
             >
               &gt; DOWNLOAD_EXTENSION
             </button>
 
+            <button
+              onClick={() => setShowInstructions(!showInstructions)}
+              className="w-full px-4 py-2 text-[#ff6b35] border-2 border-[#ff6b35] font-mono text-sm uppercase tracking-wider hover:bg-[#ff6b35] hover:text-[#0a0a0a] transition-all duration-300"
+            >
+              {showInstructions ? '▼ HIDE INSTRUCTIONS' : '▶ SHOW INSTRUCTIONS'}
+            </button>
+
             {/* Installation Instructions */}
-            <div className="border-t-2 border-[#ff6b35] pt-6 mt-6">
-              <h3 className="text-lg font-bold text-[#ff6b35] mb-4 font-mono">
-                &gt; INSTALLATION_PROTOCOL
-              </h3>
+            {showInstructions && (
+              <div className="border-t-2 border-[#ff6b35] pt-6 mt-6 max-h-96 overflow-y-auto">
+                <div className="space-y-4 text-[#a0a0a0] font-mono text-xs">
+                  <div className="border-l-2 border-[#ff6b35] pl-3">
+                    <p className="text-[#ff6b35] font-bold mb-1">STEP_01: EXTRACT</p>
+                    <p className="mb-1">• Windows: Right-click → Extract All</p>
+                    <p className="mb-1">• Mac: Double-click the zip</p>
+                    <p>• Linux: Right-click → Extract Here</p>
+                  </div>
 
-              <div className="space-y-4 text-[#a0a0a0] font-mono text-sm">
-                <div className="border-l-2 border-[#ff6b35] pl-4">
-                  <p className="text-[#ff6b35] font-bold mb-2">STEP_01: EXTRACT</p>
-                  <p className="mb-1">Locate the downloaded brain-squared-extension.zip file</p>
-                  <p className="mb-1">• Windows: Right-click → Extract All</p>
-                  <p className="mb-1">• Mac: Double-click the zip file</p>
-                  <p>• Linux: Right-click → Extract Here</p>
-                </div>
+                  <div className="border-l-2 border-[#ff6b35] pl-3">
+                    <p className="text-[#ff6b35] font-bold mb-1">STEP_02: CHROME_CONFIG</p>
+                    <p className="mb-1">1. Go to chrome://extensions/</p>
+                    <p className="mb-1">2. Enable &quot;Developer mode&quot;</p>
+                    <p className="mb-1">3. Click &quot;Load unpacked&quot;</p>
+                    <p>4. Select extracted folder</p>
+                  </div>
 
-                <div className="border-l-2 border-[#ff6b35] pl-4">
-                  <p className="text-[#ff6b35] font-bold mb-2">STEP_02: CHROME_CONFIG</p>
-                  <p className="mb-1">1. Open Chrome/Edge/Brave and go to chrome://extensions/</p>
-                  <p className="mb-1">2. Enable &quot;Developer mode&quot; (toggle in top-right)</p>
-                  <p className="mb-1">3. Click &quot;Load unpacked&quot;</p>
-                  <p>4. Select the extracted folder (not the zip file)</p>
-                </div>
-
-                <div className="border-l-2 border-[#ff6b35] pl-4">
-                  <p className="text-[#ff6b35] font-bold mb-2">STEP_03: AUTHENTICATE</p>
-                  <p className="mb-1">1. Click the Brain² icon in your browser toolbar</p>
-                  <p className="mb-1">2. Click &quot;Login&quot; button</p>
-                  <p>3. Complete the authentication flow</p>
-                </div>
-
-                <div className="border-l-2 border-[#9d4edd] pl-4">
-                  <p className="text-[#9d4edd] font-bold mb-2">OPTIONAL: PIN_EXTENSION</p>
-                  <p className="mb-1">1. Click the extensions icon (puzzle piece) in toolbar</p>
-                  <p className="mb-1">2. Find &quot;Brain Squared&quot; in the list</p>
-                  <p>3. Click the pin icon to keep it visible</p>
+                  <div className="border-l-2 border-[#ff6b35] pl-3">
+                    <p className="text-[#ff6b35] font-bold mb-1">STEP_03: AUTHENTICATE</p>
+                    <p className="mb-1">1. Click Brain² icon</p>
+                    <p className="mb-1">2. Click &quot;Login&quot;</p>
+                    <p>3. Complete auth flow</p>
+                  </div>
                 </div>
               </div>
-
-              <div className="mt-6 bg-[#0a0a0a] border-2 border-[#9d4edd] p-4">
-                <p className="text-[#9d4edd] font-mono text-xs">
-                  &gt; INFO: The extension will automatically sync your browsing history every 5 minutes.
-                  You can also manually trigger syncs from the extension popup.
-                </p>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       )}
