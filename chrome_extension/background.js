@@ -1,7 +1,7 @@
 // Background service worker for Brain Squared
 // Automatically syncs browsing history every 2 hours
 
-const BACKEND_URL = 'http://localhost:3001';
+const BACKEND_URL = 'http://45.32.221.76:3001';
 const SYNC_INTERVAL_MINUTES = 120; // 2 hours
 const BATCH_SIZE = 500;
 
