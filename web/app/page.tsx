@@ -161,7 +161,14 @@ export default function Home() {
               Install the Brain Squared Chrome Extension to unlock full functionality.
             </p>
             <button
-              onClick={() => window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank')}
+              onClick={() => {
+                const link = document.createElement('a');
+                link.href = '/api/download-extension';
+                link.download = 'brain-squared-extension.zip';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}
               className="w-full px-6 py-3 bg-[#ff6b35] text-[#0a0a0a] font-bold uppercase tracking-wider border-2 border-[#ff6b35] hover:bg-transparent hover:text-[#ff6b35] transition-all duration-300 font-mono"
             >
               &gt; INSTALL_EXTENSION
