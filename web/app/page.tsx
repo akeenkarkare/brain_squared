@@ -97,7 +97,7 @@ export default function Home() {
         </div>
 
         {/* Tagline */}
-        <p className="text-xl md:text-2xl mb-16 text-[#a0a0a0] max-w-2xl text-center font-mono">
+        <p className="text-xl md:text-2xl mb-8 text-[#a0a0a0] max-w-2xl text-center font-mono">
           {user ? (
             <span className="text-[#ff6b35]">&gt; NEURAL_LINK_ESTABLISHED</span>
           ) : (
@@ -107,7 +107,7 @@ export default function Home() {
 
         {/* Description */}
         {!user && (
-          <div className="mb-16 max-w-3xl text-center">
+          <div className="mb-8 max-w-3xl text-center">
             <p className="text-lg text-[#a0a0a0] font-mono leading-relaxed mb-6">
               Ever searched up an important article last week, only to forget where it was when you needed it most?
             </p>
