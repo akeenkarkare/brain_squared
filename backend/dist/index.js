@@ -7,7 +7,7 @@ import { initializeEmbeddingModel } from './services/embeddings.js';
 import { checkJwt } from './middleware/auth.js';
 dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT || '3000', 10);
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '50mb' })); // Allow large payloads for history uploads
@@ -31,9 +31,9 @@ async function startServer() {
         // Initialize embedding model
         console.log('Initializing embedding model...');
         await initializeEmbeddingModel();
-        // Start listening
-        app.listen(PORT, () => {
-            console.log(`\n✅ Server is running on http://localhost:${PORT}`);
+        // Start listening on all network interfaces (0.0.0.0) to accept external connections
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`\n✅ Server is running on http://0.0.0.0:${PORT}`);
             console.log(`📍 Health check: http://localhost:${PORT}/api/health`);
             console.log(`📤 Upload endpoint: http://localhost:${PORT}/api/history/upload`);
             console.log(`🔍 Search endpoint: http://localhost:${PORT}/api/history/search`);
