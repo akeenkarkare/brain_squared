@@ -159,8 +159,7 @@ export default function InsightsPage() {
                         cx="50%"
                         cy="50%"
                         outerRadius={100}
-                        label={(entry) => `${entry.category.toUpperCase()}: ${entry.percentage}%`}
-                        labelStyle={{ fill: '#38ef7d', fontFamily: 'monospace', fontSize: '12px' }}
+                        label={(entry: any) => `${entry.category.toUpperCase()}: ${entry.percentage}%`}
                       >
                         {insights.timeDistribution.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

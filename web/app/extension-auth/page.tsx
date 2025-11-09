@@ -52,14 +52,14 @@ export default function ExtensionAuthPage() {
           window.postMessage(authData, window.location.origin);
 
           // Try to send directly to extension via chrome.runtime.sendMessage
-          if (typeof chrome !== 'undefined' && chrome.runtime && extensionId) {
+          if (typeof window !== 'undefined' && (window as any).chrome?.runtime && extensionId) {
             try {
-              chrome.runtime.sendMessage(
+              (window as any).chrome.runtime.sendMessage(
                 extensionId,
                 authData,
-                (response) => {
-                  if (chrome.runtime.lastError) {
-                    console.warn('chrome.runtime.sendMessage failed:', chrome.runtime.lastError.message);
+                (response: any) => {
+                  if ((window as any).chrome.runtime.lastError) {
+                    console.warn('chrome.runtime.sendMessage failed:', (window as any).chrome.runtime.lastError.message);
                     // Fallback successful - extension will poll for the token
                     setStatus('success');
                     setMessage('Successfully authenticated! Close this tab and check the extension.');

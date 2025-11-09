@@ -103,6 +103,13 @@ export async function GET(req: NextRequest) {
 
     const accessToken = session.tokenSet?.accessToken || session.accessToken;
 
+    if (!accessToken || typeof accessToken !== 'string') {
+      return NextResponse.json(
+        { error: 'Access token not found in session' },
+        { status: 401 }
+      );
+    }
+
     const response = await fetch(`${BACKEND_URL}/api/history/search`, {
       method: 'POST',
       headers: {

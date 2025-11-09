@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
     const accessToken = session.tokenSet?.accessToken || session.accessToken;
 
-    if (!accessToken) {
+    if (!accessToken || typeof accessToken !== 'string') {
       console.error('Stream: No access token found in session:', {
         hasTokenSet: !!session.tokenSet,
         sessionKeys: Object.keys(session)
