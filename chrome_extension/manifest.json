@@ -1,15 +1,26 @@
 {
   "manifest_version": 3,
   "name": "Brain Squared - Second Memory",
-  "version": "2.0",
+  "version": "2.1",
   "description": "Automatically sync your browsing history to your second brain with semantic search",
   "permissions": [
     "history",
     "downloads",
     "alarms",
     "storage",
-    "notifications"
+    "notifications",
+    "tabs"
   ],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "http://localhost:3001/*"
+  ],
+  "externally_connectable": {
+    "matches": [
+      "http://localhost:3000/*",
+      "https://*.vercel.app/*"
+    ]
+  },
   "background": {
     "service_worker": "background.js"
   },

@@ -1,7 +1,7 @@
 // Background service worker for Brain Squared
 // Automatically syncs browsing history every 2 hours
 
-const BACKEND_URL = 'http://localhost:3000';
+const BACKEND_URL = 'http://localhost:3001';
 const SYNC_INTERVAL_MINUTES = 120; // 2 hours
 const BATCH_SIZE = 500;
 
@@ -35,6 +35,13 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 async function performSync() {
   try {
     console.log('Starting automatic sync...');
+
+    // Check if user is authenticated
+    const { authToken } = await chrome.storage.local.get('authToken');
+    if (!authToken) {
+      console.log('Not authenticated - skipping auto-sync');
+      return;
+    }
 
     // Get last sync time
     const { lastSyncTime } = await chrome.storage.local.get('lastSyncTime');
@@ -70,6 +77,15 @@ async function performSync() {
 
   } catch (error) {
     console.error('Auto-sync failed:', error);
+
+    // Show error notification
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: 'icon48.png',
+      title: 'Brain Squared - Sync Failed',
+      message: error.message || 'Failed to sync history. Please check your login.',
+      priority: 1
+    });
   }
 }
 
@@ -95,6 +111,13 @@ async function fetchHistory(startTime, endTime) {
 
 // Sync history to backend
 async function syncToBackend(historyItems) {
+  // Get auth token
+  const { authToken } = await chrome.storage.local.get('authToken');
+
+  if (!authToken) {
+    throw new Error('Not authenticated. Please login first.');
+  }
+
   const totalBatches = Math.ceil(historyItems.length / BATCH_SIZE);
 
   for (let i = 0; i < totalBatches; i++) {
@@ -113,11 +136,12 @@ async function syncToBackend(historyItems) {
       typedCount: item.typedCount || 0
     }));
 
-    // Send to backend
+    // Send to backend with auth token
     const response = await fetch(`${BACKEND_URL}/api/history/upload`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
       },
       body: JSON.stringify({ items: payload })
     });
@@ -137,7 +161,7 @@ async function syncToBackend(historyItems) {
   }
 }
 
-// Listen for messages from popup
+// Listen for messages from popup and web app
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'manualSync') {
     performSync().then(() => {
@@ -153,6 +177,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse({ lastSyncTime: data.lastSyncTime || 0 });
     });
     return true;
+  }
+
+  if (request.action === 'setAuthToken') {
+    // Store the auth token and user info from web app
+    chrome.storage.local.set({
+      authToken: request.token,
+      userId: request.userId,
+      userEmail: request.userEmail
+    }).then(() => {
+      console.log('Auth token saved from web app');
+      sendResponse({ success: true });
+    }).catch((error) => {
+      console.error('Failed to save auth token:', error);
+      sendResponse({ success: false, error: error.message });
+    });
+    return true; // Keep channel open for async response
   }
 });
 

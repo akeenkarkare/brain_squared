@@ -14,8 +14,106 @@ const progressBar = progressDiv.querySelector('.progress-bar');
 const progressText = progressDiv.querySelector('.progress-text');
 const lastSyncTimeSpan = document.getElementById('lastSyncTime');
 
+// Auth elements
+const authSection = document.getElementById('authSection');
+const authStatusText = document.getElementById('authStatusText');
+const loginBtn = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+
 // Backend API URL (change this to your deployed backend URL when ready)
-const BACKEND_URL = 'http://localhost:3000';
+const BACKEND_URL = 'http://localhost:3001';
+const WEB_APP_URL = 'http://localhost:3000';
+
+// Check authentication status on load
+async function checkAuthStatus() {
+  try {
+    const { authToken, userEmail } = await chrome.storage.local.get(['authToken', 'userEmail']);
+
+    if (authToken && userEmail) {
+      // User is logged in
+      authStatusText.textContent = `Logged in as: ${userEmail}`;
+      authStatusText.className = 'auth-status-text success';
+      loginBtn.classList.add('hidden');
+      logoutBtn.classList.remove('hidden');
+
+      // Enable sync button
+      syncBtn.disabled = false;
+
+      return true;
+    } else {
+      // User is not logged in
+      authStatusText.textContent = 'Not logged in';
+      authStatusText.className = 'auth-status-text error';
+      loginBtn.classList.remove('hidden');
+      logoutBtn.classList.add('hidden');
+
+      // Disable sync button
+      syncBtn.disabled = true;
+
+      return false;
+    }
+  } catch (error) {
+    console.error('Error checking auth status:', error);
+    authStatusText.textContent = 'Auth check failed';
+    authStatusText.className = 'auth-status-text error';
+    loginBtn.classList.remove('hidden');
+    logoutBtn.classList.add('hidden');
+    syncBtn.disabled = true;
+
+    return false;
+  }
+}
+
+// Login button handler
+loginBtn.addEventListener('click', () => {
+  // Open the web app's extension auth page in a new tab
+  const extensionId = chrome.runtime.id;
+  chrome.tabs.create({
+    url: `${WEB_APP_URL}/extension-auth?extensionId=${extensionId}`
+  });
+
+  // Show a message
+  statusDiv.textContent = 'Opening login page... After logging in, return to this popup.';
+  statusDiv.className = 'status';
+});
+
+// Logout button handler
+logoutBtn.addEventListener('click', async () => {
+  try {
+    // Clear stored auth data
+    await chrome.storage.local.remove(['authToken', 'userId', 'userEmail']);
+
+    // Update UI
+    await checkAuthStatus();
+
+    statusDiv.textContent = 'Logged out successfully';
+    statusDiv.className = 'status success';
+  } catch (error) {
+    console.error('Error logging out:', error);
+    statusDiv.textContent = 'Error logging out';
+    statusDiv.className = 'status error';
+  }
+});
+
+// Listen for auth messages from the web app
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'setAuthToken') {
+    // Store the auth token and user info
+    chrome.storage.local.set({
+      authToken: request.token,
+      userId: request.userId,
+      userEmail: request.userEmail
+    }).then(() => {
+      console.log('Auth token saved');
+      checkAuthStatus();
+      sendResponse({ success: true });
+    });
+    return true; // Keep channel open for async response
+  }
+});
+
+// Check auth status when popup opens
+checkAuthStatus();
 
 // Load and display last sync time on popup open
 async function updateLastSyncTime() {
@@ -405,6 +503,13 @@ syncBtn.addEventListener('click', async () => {
 
 // Sync history to backend
 async function syncToBackend(historyItems) {
+  // Get auth token
+  const { authToken } = await chrome.storage.local.get('authToken');
+
+  if (!authToken) {
+    throw new Error('Not authenticated. Please login first.');
+  }
+
   const BATCH_SIZE = 500; // Send 500 items at a time
   const totalBatches = Math.ceil(historyItems.length / BATCH_SIZE);
 
@@ -426,11 +531,12 @@ async function syncToBackend(historyItems) {
       typedCount: item.typedCount || 0
     }));
 
-    // Send to backend
+    // Send to backend with auth token
     const response = await fetch(`${BACKEND_URL}/api/history/upload`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
       },
       body: JSON.stringify({ items: payload })
     });

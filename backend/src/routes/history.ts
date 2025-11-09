@@ -7,6 +7,16 @@ const router = Router();
 // POST /api/history/upload - Upload browsing history
 router.post('/upload', async (req: Request, res: Response) => {
   try {
+    // Extract userId from JWT token (set by auth middleware)
+    const userId = (req as any).auth?.payload?.sub;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'User authentication required',
+      });
+    }
+
     const items: HistoryItem[] = req.body.items || req.body;
 
     if (!Array.isArray(items)) {
@@ -23,9 +33,9 @@ router.post('/upload', async (req: Request, res: Response) => {
       });
     }
 
-    console.log(`Uploading ${items.length} history items...`);
+    console.log(`User ${userId} uploading ${items.length} history items...`);
 
-    const itemsProcessed = await uploadHistoryItems(items);
+    const itemsProcessed = await uploadHistoryItems(items, userId);
 
     const response: UploadResponse = {
       success: true,
@@ -47,6 +57,15 @@ router.post('/upload', async (req: Request, res: Response) => {
 // POST /api/history/search - Search browsing history
 router.post('/search', async (req: Request, res: Response) => {
   try {
+    // Extract userId from JWT token (set by auth middleware)
+    const userId = (req as any).auth?.payload?.sub;
+
+    if (!userId) {
+      return res.status(401).json({
+        error: 'User authentication required',
+      });
+    }
+
     const { query, limit = 10, minScore = 0.3 }: SearchQuery = req.body;
 
     if (!query) {
@@ -55,9 +74,9 @@ router.post('/search', async (req: Request, res: Response) => {
       });
     }
 
-    console.log(`Searching for: "${query}"`);
+    console.log(`User ${userId} searching for: "${query}"`);
 
-    const results = await searchHistory(query, limit, minScore);
+    const results = await searchHistory(query, userId, limit, minScore);
 
     const response: SearchResponse = {
       results: results,
@@ -77,7 +96,16 @@ router.post('/search', async (req: Request, res: Response) => {
 // GET /api/history/stats - Get collection statistics
 router.get('/stats', async (req: Request, res: Response) => {
   try {
-    const stats = await getStats();
+    // Extract userId from JWT token (set by auth middleware)
+    const userId = (req as any).auth?.payload?.sub;
+
+    if (!userId) {
+      return res.status(401).json({
+        error: 'User authentication required',
+      });
+    }
+
+    const stats = await getStats(userId);
     res.json(stats);
   } catch (error: any) {
     console.error('Stats error:', error);
