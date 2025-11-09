@@ -2,9 +2,15 @@
 
 import Link from "next/link";
 import { useUser } from '@auth0/nextjs-auth0/client';
+import { useState, useEffect } from "react";
 
 export default function Home() {
   const { user, isLoading } = useUser();
+  const [latency, setLatency] = useState(0);
+
+  useEffect(() => {
+    setLatency(Math.floor(Math.random() * 50));
+  }, []);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-[#0a0a0a]">
@@ -88,7 +94,7 @@ export default function Home() {
         <div className="mt-20 border-t-2 border-[#ff6b35] pt-6 max-w-4xl w-full">
           <div className="flex justify-between items-center text-[#ff6b35] font-mono text-sm">
             <span>&gt; STATUS: OPERATIONAL</span>
-            <span className="hidden md:block">&gt; LATENCY: {Math.floor(Math.random() * 50)}ms</span>
+            <span className="hidden md:block">&gt; LATENCY: {latency}ms</span>
             <span>&gt; UPTIME: 99.9%</span>
           </div>
         </div>
