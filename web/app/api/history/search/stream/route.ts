@@ -20,6 +20,10 @@ export async function POST(req: NextRequest) {
     const accessToken = session.tokenSet?.accessToken || session.accessToken;
 
     if (!accessToken) {
+      console.error('Stream: No access token found in session:', {
+        hasTokenSet: !!session.tokenSet,
+        sessionKeys: Object.keys(session)
+      });
       return new Response(
         JSON.stringify({ error: 'Access token not found in session' }),
         {
@@ -28,6 +32,9 @@ export async function POST(req: NextRequest) {
         }
       );
     }
+
+    console.log('Stream: Sending request to backend:', BACKEND_URL);
+    console.log('Stream: Token preview:', accessToken.substring(0, 50) + '...');
 
     const body = await req.json();
 
@@ -42,9 +49,25 @@ export async function POST(req: NextRequest) {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
+      let errorMessage = 'Backend request failed';
+      const contentType = response.headers.get('content-type');
+
+      try {
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } else {
+          // HTML error page or other content
+          const text = await response.text();
+          errorMessage = `Backend error (${response.status}). Make sure backend is running and configured correctly.`;
+          console.error('Backend returned non-JSON response:', text.substring(0, 200));
+        }
+      } catch (parseError) {
+        errorMessage = `Backend error (${response.status}): ${response.statusText}`;
+      }
+
       return new Response(
-        JSON.stringify({ error: errorData.error || 'Backend request failed' }),
+        JSON.stringify({ error: errorMessage }),
         {
           status: response.status,
           headers: { 'Content-Type': 'application/json' }

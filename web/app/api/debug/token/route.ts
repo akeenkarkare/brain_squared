@@ -11,7 +11,7 @@ export async function GET() {
 
     const accessToken = session.tokenSet?.accessToken || session.accessToken;
 
-    if (!accessToken) {
+    if (!accessToken || typeof accessToken !== 'string') {
       return NextResponse.json({ error: 'No access token' }, { status: 401 });
     }
 
