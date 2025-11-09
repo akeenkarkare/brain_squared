@@ -152,8 +152,8 @@ export default function Home() {
             <button
               onClick={() => {
                 const link = document.createElement('a');
-                link.href = '/chrome_extension.crx';
-                link.download = 'brain-squared.crx';
+                link.href = '/api/download-extension';
+                link.download = 'brain-squared-extension.zip';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
