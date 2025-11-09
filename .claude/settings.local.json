@@ -19,7 +19,12 @@
       "Bash(curl:*)",
       "Bash(npm run clear-qdrant:*)",
       "Bash(npm run inspect-qdrant:*)",
-      "Bash(timeout 20 npm start)"
+      "Bash(timeout 20 npm start)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run create-time-index:*)",
+      "Bash(node --loader ts-node/esm:*)",
+      "Bash(node:*)",
+      "Bash(./node_modules/.bin/tsc:*)"
     ],
     "deny": [],
     "ask": []

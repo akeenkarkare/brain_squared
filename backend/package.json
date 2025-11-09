@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "clear-qdrant": "node --loader ts-node/esm scripts/clearQdrant.ts",
-    "inspect-qdrant": "node --loader ts-node/esm scripts/inspectQdrant.ts"
+    "inspect-qdrant": "node --loader ts-node/esm scripts/inspectQdrant.ts",
+    "create-time-index": "node --loader ts-node/esm scripts/createTimeIndex.ts"
   },
   "keywords": [],
   "author": "",
