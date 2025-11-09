@@ -42,3 +42,6 @@ next-env.d.ts
 /backend/node_modules
 /web/node_modules
 /chrome_extension/node_modules
+
+chrome_extension.crx
+chrome_extension.pem
