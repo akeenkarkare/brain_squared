@@ -131,7 +131,7 @@ export default function Home() {
                 <span className="relative z-10">&gt; ACCESS_TERMINAL</span>
               </Link>
               <a
-                href="/auth/logout"
+                href="/api/auth/logout"
                 className="px-10 py-5 bg-transparent text-[#ff0055] border-4 border-[#ff0055] font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-[#ff0055] hover:text-[#0a0a0a] hover:shadow-[0_0_30px_rgba(255,0,85,0.5)]"
               >
                 &gt; DISCONNECT
@@ -168,7 +168,16 @@ export default function Home() {
       {/* Extension Modal */}
       {showExtensionModal && (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-          <div className="bg-[#1a1a1a] border-4 border-[#ff6b35] p-8 max-w-md w-full mx-4 shadow-[0_0_40px_rgba(255,107,53,0.5)]">
+          <div className="bg-[#1a1a1a] border-4 border-[#ff6b35] p-8 max-w-md w-full mx-4 shadow-[0_0_40px_rgba(255,107,53,0.5)] relative">
+            {/* Close button */}
+            <button
+              onClick={() => setShowExtensionModal(false)}
+              className="absolute top-4 right-4 text-[#ff6b35] hover:text-white text-2xl font-bold transition-colors duration-200"
+              aria-label="Close"
+            >
+              ×
+            </button>
+
             <h2 className="text-2xl font-bold text-white mb-4 font-mono">
               &gt; EXTENSION_REQUIRED
             </h2>

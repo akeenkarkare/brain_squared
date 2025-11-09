@@ -12,6 +12,12 @@ interface Message {
   timestamp: Date;
   searchResults?: SearchResult[];
   isSearchQuery?: boolean;
+  isTimeMachine?: boolean;
+  timeRange?: {
+    start: number;
+    end: number;
+    description: string;
+  };
 }
 
 interface SearchResult {
@@ -31,21 +37,41 @@ export default function ChatPage() {
     {
       id: "1",
       role: "assistant",
-      content: "SYSTEM_READY. Neural search interface initialized.\n\nType any query to search your browsing history. Examples:\n• \"python tutorials\"\n• \"github repositories\"\n• \"machine learning articles\"\n\nMake sure you've synced your history via the Brain² extension first!",
+      content: "SYSTEM_READY. Neural search interface initialized.\n\nType any query to search your browsing history:\n\n📚 SEMANTIC SEARCH:\n• \"python tutorials\"\n• \"github repositories\"\n• \"machine learning articles\"\n\n⏰ TIME MACHINE:\n• \"What was I reading about robotics 4 weeks ago?\"\n• \"Show me React resources from last month\"\n• \"What did I research yesterday?\"\n\nMake sure you've synced your history via the Brain² extension first!",
       timestamp: new Date(),
     },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Detect manual scrolling
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      setShouldAutoScroll(isNearBottom);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Only auto-scroll if user hasn't manually scrolled up
+  useEffect(() => {
+    if (shouldAutoScroll) {
+      scrollToBottom();
+    }
+  }, [messages, shouldAutoScroll]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,11 +91,22 @@ export default function ChatPage() {
     setInput("");
     setIsLoading(true);
 
-    // Check if this is a search query (users can just type naturally)
-    // All queries will trigger a search
+    // Create placeholder assistant message for streaming
+    const assistantId = (Date.now() + 1).toString();
+    const assistantMessage: Message = {
+      id: assistantId,
+      role: "assistant",
+      content: "",
+      timestamp: new Date(),
+      searchResults: [],
+      isSearchQuery: true,
+    };
+
+    setMessages((prev) => [...prev, assistantMessage]);
+
     try {
-      // Call our search API
-      const response = await fetch('/api/history/search', {
+      // Call streaming search API
+      const response = await fetch('/api/history/search/stream', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,38 +119,99 @@ export default function ChatPage() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Search failed');
+        throw new Error('Search failed');
       }
 
-      const data = await response.json();
-      const results = data.results || [];
-      const aiResponse = data.aiResponse || '';
+      // Handle streaming response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedContent = '';
+      let results: SearchResult[] = [];
+      let isTimeMachine = false;
+      let timeRange = undefined;
+      let buffer = ''; // Buffer for partial lines
 
-      // Create assistant message with AI-synthesized response
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: aiResponse || (results.length > 0
-          ? `Found ${results.length} ${results.length === 1 ? 'result' : 'results'} in your browsing history:`
-          : `No results found for "${userInput}". Try different keywords or sync your browsing history via the extension.`),
-        timestamp: new Date(),
-        searchResults: results,
-        isSearchQuery: true,
-      };
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-      setMessages((prev) => [...prev, assistantMessage]);
+          // Decode and add to buffer
+          buffer += decoder.decode(value, { stream: true });
+
+          // Split by newlines, keeping incomplete line in buffer
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.trim() === '') continue;
+
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6));
+
+                if (data.type === 'results') {
+                  results = data.results || [];
+                  isTimeMachine = data.isTimeMachine || false;
+                  timeRange = data.timeRange || undefined;
+                } else if (data.type === 'token') {
+                  accumulatedContent += data.content;
+
+                  // Update message with streaming content
+                  setMessages((prev) =>
+                    prev.map((msg) =>
+                      msg.id === assistantId
+                        ? {
+                            ...msg,
+                            content: accumulatedContent,
+                            searchResults: results,
+                          }
+                        : msg
+                    )
+                  );
+                } else if (data.type === 'done') {
+                  // Streaming complete
+                  break;
+                }
+              } catch (e) {
+                // Skip malformed JSON (partial chunk)
+                console.error('Failed to parse SSE line:', e);
+              }
+            }
+          }
+        }
+      }
+
+      // Final update with complete message
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantId
+            ? {
+                ...msg,
+                content: accumulatedContent || (results.length > 0
+                  ? `Found ${results.length} ${results.length === 1 ? 'result' : 'results'} in your browsing history:`
+                  : `No results found for "${userInput}". Try different keywords or sync your browsing history via the extension.`),
+                searchResults: results,
+                isTimeMachine,
+                timeRange,
+              }
+            : msg
+        )
+      );
+
     } catch (error: any) {
       console.error('Search error:', error);
 
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: `ERROR: ${error.message || 'Failed to search. Please ensure you are logged in and have synced your browsing history.'}`,
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantId
+            ? {
+                ...msg,
+                content: `ERROR: ${error.message || 'Failed to search. Please ensure you are logged in and have synced your browsing history.'}`,
+              }
+            : msg
+        )
+      );
     } finally {
       setIsLoading(false);
     }
@@ -155,13 +253,25 @@ export default function ChatPage() {
 
           <div className="flex items-center gap-3">
             <button
+              onClick={() => router.push('/timeline')}
+              className="px-4 py-2 text-sm font-mono font-bold text-[#38ef7d] border-2 border-[#38ef7d] hover:bg-[#38ef7d] hover:text-[#0a0a0a] transition-all duration-300 uppercase tracking-wider"
+            >
+              &gt; TIMELINE
+            </button>
+            <button
+              onClick={() => router.push('/insights')}
+              className="px-4 py-2 text-sm font-mono font-bold text-[#00b4d8] border-2 border-[#00b4d8] hover:bg-[#00b4d8] hover:text-[#0a0a0a] transition-all duration-300 uppercase tracking-wider"
+            >
+              &gt; INSIGHTS
+            </button>
+            <button
               onClick={handleClearChat}
               className="px-4 py-2 text-sm font-mono font-bold text-[#ff9e00] border-2 border-[#ff9e00] hover:bg-[#ff9e00] hover:text-[#0a0a0a] transition-all duration-300 uppercase tracking-wider"
             >
               &gt; CLEAR
             </button>
             <a
-              href="/auth/logout"
+              href="/api/auth/logout"
               className="px-4 py-2 text-sm font-mono font-bold text-[#ff0055] border-2 border-[#ff0055] hover:bg-[#ff0055] hover:text-[#0a0a0a] transition-all duration-300 uppercase tracking-wider"
             >
               &gt; LOGOUT
@@ -171,7 +281,7 @@ export default function ChatPage() {
       </header>
 
       {/* Messages Container */}
-      <main className="relative z-10 flex-1 overflow-y-auto px-4 py-6 scrollbar-thin scrollbar-thumb-[#ff6b35] scrollbar-track-[#1a1a1a]">
+      <main ref={messagesContainerRef} className="relative z-10 flex-1 overflow-y-auto px-4 py-6 scrollbar-thin scrollbar-thumb-[#ff6b35] scrollbar-track-[#1a1a1a]">
         <div className="max-w-4xl mx-auto space-y-6">
           {messages.map((message) => (
             <div
@@ -191,14 +301,30 @@ export default function ChatPage() {
                   message.role === "user" ? "order-2" : ""
                 } ${message.isSearchQuery && message.searchResults ? "max-w-full" : ""}`}
               >
+                {/* Time Machine Badge */}
+                {message.isTimeMachine && message.timeRange && (
+                  <div className="mb-2 inline-flex items-center gap-2 px-3 py-1 bg-[#9d4edd] bg-opacity-20 border-2 border-[#9d4edd] font-mono text-xs text-[#9d4edd]">
+                    <span>⏰ TIME MACHINE</span>
+                    <span className="text-[#a0a0a0]">|</span>
+                    <span className="uppercase">{message.timeRange.description}</span>
+                  </div>
+                )}
+
                 <div
                   className={`px-5 py-4 font-mono text-sm border-2 ${
                     message.role === "user"
                       ? "bg-[#ff6b35] bg-opacity-10 border-[#ff6b35] text-white"
+                      : message.isTimeMachine
+                      ? "bg-[#9d4edd] bg-opacity-5 border-[#9d4edd] text-[#ffffff] shadow-[0_0_20px_rgba(157,78,221,0.3)]"
                       : "bg-[#1a1a1a] border-[#ff9e00] text-[#ffffff]"
                   }`}
                 >
-                  <p className="leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                  <p className="leading-relaxed whitespace-pre-wrap">
+                    {message.content}
+                    {message.role === "assistant" && isLoading && message.content && !message.content.includes("ERROR") && (
+                      <span className="inline-block w-2 h-4 bg-[#ff6b35] ml-1 animate-pulse"></span>
+                    )}
+                  </p>
                 </div>
 
                 {/* Show search results if available */}
@@ -229,7 +355,7 @@ export default function ChatPage() {
             </div>
           ))}
 
-          {isLoading && (
+          {isLoading && !messages.some(m => m.id === (Date.now() + 1).toString() && m.content === "") && (
             <div className="flex gap-4 justify-start">
               <div className="w-10 h-10 flex-shrink-0 bg-gradient-to-br from-[#ff6b35] to-[#ff9e00] flex items-center justify-center border-2 border-[#ff6b35] font-bold text-[#0a0a0a] animate-pulse">
                 AI
@@ -239,7 +365,7 @@ export default function ChatPage() {
                   <div className="w-2 h-2 bg-[#ff9e00] rounded-full animate-pulse"></div>
                   <div className="w-2 h-2 bg-[#ff9e00] rounded-full animate-pulse delay-150"></div>
                   <div className="w-2 h-2 bg-[#ff9e00] rounded-full animate-pulse delay-300"></div>
-                  <span className="ml-2">PROCESSING...</span>
+                  <span className="ml-2">SEARCHING...</span>
                 </div>
               </div>
             </div>
