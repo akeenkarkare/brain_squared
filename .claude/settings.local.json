@@ -14,7 +14,11 @@
       "Bash(git merge:*)",
       "Bash(git push:*)",
       "Bash(pkill:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(curl:*)",
+      "Bash(npm run clear-qdrant:*)",
+      "Bash(npm run inspect-qdrant:*)"
     ],
     "deny": [],
     "ask": []

@@ -2,9 +2,54 @@
 
 import Link from "next/link";
 import { useUser } from '@auth0/nextjs-auth0/client';
+import { useState, useEffect } from "react";
+import { checkExtensionInstalled } from '@/lib/extensionDetection';
 
 export default function Home() {
   const { user, isLoading } = useUser();
+  const [latency, setLatency] = useState(0);
+  const [extensionInstalled, setExtensionInstalled] = useState<boolean | null>(null);
+  const [showExtensionModal, setShowExtensionModal] = useState(false);
+
+  useEffect(() => {
+    setLatency(Math.floor(Math.random() * 50));
+  }, []);
+
+  // Check for extension installation
+  useEffect(() => {
+    const detectExtension = async () => {
+      try {
+        const isInstalled = await checkExtensionInstalled();
+        setExtensionInstalled(isInstalled);
+
+        // Show modal only if extension is NOT installed and user IS authenticated
+        if (!isInstalled && user) {
+          setShowExtensionModal(true);
+        } else {
+          setShowExtensionModal(false);
+        }
+      } catch (error) {
+        console.error('[Home Page] Error detecting extension:', error);
+        setExtensionInstalled(false);
+      }
+    };
+
+    detectExtension();
+
+    // Listen for visibility changes to reload when user returns from another tab
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('[Home Page] User returned from another tab, checking extension again...');
+        detectExtension();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user]);
 
   // Show loading state
   if (isLoading) {
@@ -99,11 +144,31 @@ export default function Home() {
         <div className="mt-20 border-t-2 border-[#ff6b35] pt-6 max-w-4xl w-full">
           <div className="flex justify-between items-center text-[#ff6b35] font-mono text-sm">
             <span>&gt; STATUS: OPERATIONAL</span>
-            <span className="hidden md:block">&gt; LATENCY: {Math.floor(Math.random() * 50)}ms</span>
+            <span className="hidden md:block">&gt; LATENCY: {latency}ms</span>
             <span>&gt; UPTIME: 99.9%</span>
           </div>
         </div>
       </main>
+
+      {/* Extension Modal */}
+      {showExtensionModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+          <div className="bg-[#1a1a1a] border-4 border-[#ff6b35] p-8 max-w-md w-full mx-4 shadow-[0_0_40px_rgba(255,107,53,0.5)]">
+            <h2 className="text-2xl font-bold text-white mb-4 font-mono">
+              &gt; EXTENSION_REQUIRED
+            </h2>
+            <p className="text-[#a0a0a0] mb-6 font-mono">
+              Install the Brain Squared Chrome Extension to unlock full functionality.
+            </p>
+            <button
+              onClick={() => window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank')}
+              className="w-full px-6 py-3 bg-[#ff6b35] text-[#0a0a0a] font-bold uppercase tracking-wider border-2 border-[#ff6b35] hover:bg-transparent hover:text-[#ff6b35] transition-all duration-300 font-mono"
+            >
+              &gt; INSTALL_EXTENSION
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
