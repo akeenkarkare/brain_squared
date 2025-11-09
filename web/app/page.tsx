@@ -217,22 +217,22 @@ export default function Home() {
                 <div className="border-l-2 border-[#ff6b35] pl-4">
                   <p className="text-[#ff6b35] font-bold mb-2">STEP_02: CHROME_CONFIG</p>
                   <p className="mb-1">1. Open Chrome/Edge/Brave and go to chrome://extensions/</p>
-                  <p className="mb-1">2. Enable "Developer mode" (toggle in top-right)</p>
-                  <p className="mb-1">3. Click "Load unpacked"</p>
+                  <p className="mb-1">2. Enable &quot;Developer mode&quot; (toggle in top-right)</p>
+                  <p className="mb-1">3. Click &quot;Load unpacked&quot;</p>
                   <p>4. Select the extracted folder (not the zip file)</p>
                 </div>
 
                 <div className="border-l-2 border-[#ff6b35] pl-4">
                   <p className="text-[#ff6b35] font-bold mb-2">STEP_03: AUTHENTICATE</p>
                   <p className="mb-1">1. Click the Brain² icon in your browser toolbar</p>
-                  <p className="mb-1">2. Click "Login" button</p>
+                  <p className="mb-1">2. Click &quot;Login&quot; button</p>
                   <p>3. Complete the authentication flow</p>
                 </div>
 
                 <div className="border-l-2 border-[#9d4edd] pl-4">
                   <p className="text-[#9d4edd] font-bold mb-2">OPTIONAL: PIN_EXTENSION</p>
                   <p className="mb-1">1. Click the extensions icon (puzzle piece) in toolbar</p>
-                  <p className="mb-1">2. Find "Brain Squared" in the list</p>
+                  <p className="mb-1">2. Find &quot;Brain Squared&quot; in the list</p>
                   <p>3. Click the pin icon to keep it visible</p>
                 </div>
               </div>
