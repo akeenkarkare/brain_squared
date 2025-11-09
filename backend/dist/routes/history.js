@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { uploadHistoryItems, searchHistory, getStats } from '../services/history.js';
+import { uploadHistoryItems, getStats, getLastSyncTime } from '../services/history.js';
+import { queryWithOpenRouter } from '../services/openrouter.js';
 const router = Router();
 // POST /api/history/upload - Upload browsing history
 router.post('/upload', async (req, res) => {
@@ -60,13 +61,17 @@ router.post('/search', async (req, res) => {
             });
         }
         console.log(`User ${userId} searching for: "${query}"`);
-        const results = await searchHistory(query, userId, limit, minScore);
+        // Use OpenRouter for triangular synthesis
+        const { response: aiResponse, results } = await queryWithOpenRouter(query, userId, limit, minScore);
         const response = {
             results: results,
             total: results.length,
             query: query,
         };
-        res.json(response);
+        res.json({
+            ...response,
+            aiResponse: aiResponse,
+        });
     }
     catch (error) {
         console.error('Search error:', error);
@@ -92,6 +97,30 @@ router.get('/stats', async (req, res) => {
         console.error('Stats error:', error);
         res.status(500).json({
             error: `Error getting stats: ${error.message}`,
+        });
+    }
+});
+// GET /api/history/last-sync-time - Get last sync timestamp for user
+router.get('/last-sync-time', async (req, res) => {
+    try {
+        // Extract userId from JWT token (set by auth middleware)
+        const userId = req.auth?.payload?.sub;
+        if (!userId) {
+            return res.status(401).json({
+                error: 'User authentication required',
+            });
+        }
+        const lastSyncTime = await getLastSyncTime(userId);
+        res.json({
+            lastSyncTime: lastSyncTime,
+            userId: userId,
+        });
+    }
+    catch (error) {
+        console.error('Last sync time error:', error);
+        res.status(500).json({
+            error: `Error getting last sync time: ${error.message}`,
+            lastSyncTime: 0, // Return 0 on error to trigger full sync
         });
     }
 });
