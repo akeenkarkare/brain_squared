@@ -51,6 +51,17 @@ export default function Home() {
     };
   }, [user]);
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen relative overflow-hidden bg-[#0a0a0a] flex items-center justify-center">
+        <div className="text-[#ff6b35] font-mono text-xl animate-pulse">
+          &gt; LOADING_NEURAL_INTERFACE...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen relative overflow-hidden bg-[#0a0a0a]">
       {/* Retro grid background */}
@@ -61,7 +72,7 @@ export default function Home() {
 
       {/* Animated gradient orbs */}
       <div className="absolute top-20 left-20 w-96 h-96 bg-[#ff6b35] rounded-full blur-[120px] opacity-20 animate-pulse"></div>
-      <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#9d4edd] rounded-full blur-[120px] opacity-20 animate-pulse delay-1000"></div>
+      <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#9d4edd] rounded-full blur-[120px] opacity-20 animate-pulse [animation-delay:1000ms]"></div>
 
       <main className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
         {/* Logo/Header */}

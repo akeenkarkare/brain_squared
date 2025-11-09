@@ -1,9 +1,9 @@
 // Background service worker for Brain Squared
-// Automatically syncs browsing history every 2 hours
+// Automatically syncs browsing history every 5 minutes
 
-const BACKEND_URL = 'http://localhost:3001';
-const SYNC_INTERVAL_MINUTES = 120; // 2 hours
-const BATCH_SIZE = 500;
+const BACKEND_URL = 'http://45.32.221.76:3001';
+const SYNC_INTERVAL_MINUTES = 5; // 5 minutes for frequent updates
+const BATCH_SIZE = 200; // Optimized for frequent small syncs
 
 // Initialize alarms when extension is installed/updated
 chrome.runtime.onInstalled.addListener(async () => {
@@ -20,7 +20,17 @@ chrome.runtime.onInstalled.addListener(async () => {
     await chrome.storage.local.set({ lastSyncTime: 0 });
   }
 
-  console.log('Auto-sync scheduled: every 2 hours');
+  console.log(`Auto-sync scheduled: every ${SYNC_INTERVAL_MINUTES} minutes`);
+
+  // Trigger initial sync on install/update
+  console.log('Triggering initial sync...');
+  setTimeout(() => performSync(), 5000); // Wait 5 seconds after install
+});
+
+// Sync on browser startup
+chrome.runtime.onStartup.addListener(async () => {
+  console.log('Browser started - triggering sync...');
+  await performSync();
 });
 
 // Listen for alarm
@@ -43,8 +53,24 @@ async function performSync() {
       return;
     }
 
-    // Get last sync time
-    const { lastSyncTime } = await chrome.storage.local.get('lastSyncTime');
+    // Get last sync time with server fallback
+    let { lastSyncTime } = await chrome.storage.local.get('lastSyncTime');
+
+    // Verify with server as fallback (useful if local storage was cleared)
+    if (!lastSyncTime || lastSyncTime === 0) {
+      console.log('No local lastSyncTime found, checking server...');
+      try {
+        const serverSyncTime = await getServerLastSyncTime(authToken);
+        if (serverSyncTime > 0) {
+          lastSyncTime = serverSyncTime;
+          await chrome.storage.local.set({ lastSyncTime: serverSyncTime });
+          console.log(`Using server lastSyncTime: ${new Date(serverSyncTime).toISOString()}`);
+        }
+      } catch (error) {
+        console.warn('Could not get server sync time, will sync all history:', error);
+      }
+    }
+
     const startTime = lastSyncTime || 0;
     const endTime = Date.now();
 
@@ -158,6 +184,28 @@ async function syncToBackend(historyItems) {
     if (i < totalBatches - 1) {
       await new Promise(resolve => setTimeout(resolve, 500));
     }
+  }
+}
+
+// Get last sync time from server
+async function getServerLastSyncTime(authToken) {
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/history/last-sync-time`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.lastSyncTime || 0;
+  } catch (error) {
+    console.error('Error getting server last sync time:', error);
+    throw error;
   }
 }
 

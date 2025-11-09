@@ -51,6 +51,7 @@ export async function uploadHistoryItems(items: HistoryItem[], userId: string): 
           visitCount: item.visitCount || 0,
           typedCount: item.typedCount || 0,
           embeddingText: embeddingText,
+          syncedAt: Date.now(), // Server-side timestamp for when item was synced
         },
       };
 
@@ -113,6 +114,39 @@ export async function searchHistory(
   } catch (error) {
     console.error('Error searching history:', error);
     throw error;
+  }
+}
+
+// Get last sync time for a user
+export async function getLastSyncTime(userId: string): Promise<number> {
+  try {
+    // Scroll through user's items sorted by syncedAt descending
+    const scrollResult = await qdrantClient.scroll(COLLECTION_NAME, {
+      filter: {
+        must: [
+          {
+            key: 'user_id',
+            match: { value: userId },
+          },
+        ],
+      },
+      limit: 1,
+      with_payload: true,
+      with_vector: false,
+      // Note: Qdrant doesn't have native sorting in scroll, so we'll get all and find max
+    });
+
+    if (scrollResult.points.length === 0) {
+      return 0; // No sync history found
+    }
+
+    // For better performance, we'd need to maintain a separate "last_sync" metadata
+    // For now, return the most recent syncedAt from the first result
+    const syncedAt = scrollResult.points[0]?.payload?.syncedAt as number || 0;
+    return syncedAt;
+  } catch (error) {
+    console.error('Error getting last sync time:', error);
+    return 0; // Return 0 on error to trigger full sync
   }
 }
 

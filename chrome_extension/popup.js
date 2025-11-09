@@ -21,8 +21,8 @@ const loginBtn = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 
 // Backend API URL (change this to your deployed backend URL when ready)
-const BACKEND_URL = 'http://localhost:3001';
-const WEB_APP_URL = 'http://localhost:3000';
+const BACKEND_URL = 'http://45.32.221.76:3001';
+const WEB_APP_URL = 'http://45.32.221.76:3000';
 
 // Check authentication status on load
 async function checkAuthStatus() {
