@@ -161,7 +161,7 @@ async function syncToBackend(historyItems) {
   }
 }
 
-// Listen for messages from popup and web app
+// Listen for messages from popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'manualSync') {
     performSync().then(() => {
@@ -179,6 +179,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 
+  if (request.action === 'getAuthStatus') {
+    chrome.storage.local.get(['authToken', 'userId', 'userEmail']).then((data) => {
+      sendResponse({
+        isAuthenticated: !!data.authToken,
+        userId: data.userId,
+        userEmail: data.userEmail
+      });
+    });
+    return true;
+  }
+
   if (request.action === 'setAuthToken') {
     // Store the auth token and user info from web app
     chrome.storage.local.set({
@@ -188,6 +199,44 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }).then(() => {
       console.log('Auth token saved from web app');
       sendResponse({ success: true });
+    }).catch((error) => {
+      console.error('Failed to save auth token:', error);
+      sendResponse({ success: false, error: error.message });
+    });
+    return true; // Keep channel open for async response
+  }
+
+  if (request.action === 'logout') {
+    chrome.storage.local.remove(['authToken', 'userId', 'userEmail']).then(() => {
+      console.log('User logged out');
+      sendResponse({ success: true });
+    });
+    return true;
+  }
+});
+
+// Listen for messages from external web app (cross-origin)
+chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
+  console.log('External message received:', request.action, 'from:', sender.url);
+
+  if (request.action === 'setAuthToken') {
+    // Store the auth token and user info from web app
+    chrome.storage.local.set({
+      authToken: request.token,
+      userId: request.userId,
+      userEmail: request.userEmail
+    }).then(() => {
+      console.log('Auth token saved from external web app:', request.userEmail);
+      sendResponse({ success: true });
+
+      // Show success notification
+      chrome.notifications.create({
+        type: 'basic',
+        iconUrl: 'icon48.png',
+        title: 'Brain Squared - Login Successful',
+        message: `Logged in as ${request.userEmail}`,
+        priority: 1
+      });
     }).catch((error) => {
       console.error('Failed to save auth token:', error);
       sendResponse({ success: false, error: error.message });

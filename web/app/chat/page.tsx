@@ -3,12 +3,24 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from '@auth0/nextjs-auth0/client';
+import SearchResults from "@/components/SearchResults";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+  searchResults?: SearchResult[];
+  isSearchQuery?: boolean;
+}
+
+interface SearchResult {
+  url: string;
+  title: string;
+  visitCount: number;
+  lastVisitTime: number;
+  score: number;
+  typedCount?: number;
 }
 
 export default function ChatPage() {
@@ -19,7 +31,7 @@ export default function ChatPage() {
     {
       id: "1",
       role: "assistant",
-      content: "SYSTEM_READY. Neural interface initialized. How may I assist you?",
+      content: "SYSTEM_READY. Neural search interface initialized.\n\nType any query to search your browsing history. Examples:\n• \"python tutorials\"\n• \"github repositories\"\n• \"machine learning articles\"\n\nMake sure you've synced your history via the Brain² extension first!",
       timestamp: new Date(),
     },
   ]);
@@ -40,10 +52,12 @@ export default function ChatPage() {
 
     if (!input.trim() || isLoading) return;
 
+    const userInput = input.trim();
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
-      content: input,
+      content: userInput,
       timestamp: new Date(),
     };
 
@@ -51,31 +65,57 @@ export default function ChatPage() {
     setInput("");
     setIsLoading(true);
 
-    setTimeout(() => {
+    // Check if this is a search query (users can just type naturally)
+    // All queries will trigger a search
+    try {
+      // Call our search API
+      const response = await fetch('/api/history/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: userInput,
+          limit: 20,
+          minScore: 0.3
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Search failed');
+      }
+
+      const data = await response.json();
+      const results = data.results || [];
+
+      // Create assistant message with search results
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: generateResponse(input),
+        content: results.length > 0
+          ? `Found ${results.length} ${results.length === 1 ? 'result' : 'results'} in your browsing history:`
+          : `No results found for "${userInput}". Try different keywords or sync your browsing history via the extension.`,
         timestamp: new Date(),
+        searchResults: results,
+        isSearchQuery: true,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error: any) {
+      console.error('Search error:', error);
+
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: `ERROR: ${error.message || 'Failed to search. Please ensure you are logged in and have synced your browsing history.'}`,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
-  };
-
-  const generateResponse = (userInput: string): string => {
-    const responses = [
-      "Processing your query through neural networks...",
-      "Analyzing data patterns. Standby for response...",
-      "System computed optimal solution. Transmitting...",
-      "Query processed. Delivering results...",
-      "Neural link established. Information retrieved...",
-    ];
-
-    const randomResponse =
-      responses[Math.floor(Math.random() * responses.length)];
-    return `${randomResponse} Query: "${userInput}". [PLACEHOLDER_RESPONSE: Connect to actual AI service for real responses]`;
+    }
   };
 
   const handleClearChat = () => {
@@ -83,7 +123,7 @@ export default function ChatPage() {
       {
         id: "1",
         role: "assistant",
-        content: "SYSTEM_RESET. All previous data cleared. Ready for new session.",
+        content: "SYSTEM_RESET. All previous searches cleared. Ready for new queries.",
         timestamp: new Date(),
       },
     ]);
@@ -148,7 +188,7 @@ export default function ChatPage() {
               <div
                 className={`max-w-[70%] ${
                   message.role === "user" ? "order-2" : ""
-                }`}
+                } ${message.isSearchQuery && message.searchResults ? "max-w-full" : ""}`}
               >
                 <div
                   className={`px-5 py-4 font-mono text-sm border-2 ${
@@ -159,6 +199,18 @@ export default function ChatPage() {
                 >
                   <p className="leading-relaxed whitespace-pre-wrap">{message.content}</p>
                 </div>
+
+                {/* Show search results if available */}
+                {message.isSearchQuery && message.searchResults && message.searchResults.length > 0 && (
+                  <div className="mt-4">
+                    <SearchResults
+                      results={message.searchResults}
+                      query={messages.find(m => m.id === (parseInt(message.id) - 1).toString())?.content || ""}
+                      isLoading={false}
+                    />
+                  </div>
+                )}
+
                 <p className="text-xs text-[#a0a0a0] mt-2 px-1 font-mono">
                   &gt; {message.timestamp.toLocaleTimeString([], {
                     hour: "2-digit",

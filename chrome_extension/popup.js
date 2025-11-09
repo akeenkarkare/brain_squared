@@ -95,7 +95,7 @@ logoutBtn.addEventListener('click', async () => {
   }
 });
 
-// Listen for auth messages from the web app
+// Listen for auth messages from the web app via chrome.runtime
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'setAuthToken') {
     // Store the auth token and user info
@@ -104,11 +104,37 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       userId: request.userId,
       userEmail: request.userEmail
     }).then(() => {
-      console.log('Auth token saved');
+      console.log('Auth token saved via runtime message');
       checkAuthStatus();
+      statusDiv.textContent = `Logged in successfully as ${request.userEmail}!`;
+      statusDiv.className = 'status success';
       sendResponse({ success: true });
     });
     return true; // Keep channel open for async response
+  }
+});
+
+// Also listen for postMessage (alternative auth method)
+window.addEventListener('message', async (event) => {
+  // Security: verify origin
+  if (event.origin !== WEB_APP_URL) {
+    return;
+  }
+
+  if (event.data.type === 'BRAIN_SQUARED_AUTH' && event.data.token) {
+    try {
+      await chrome.storage.local.set({
+        authToken: event.data.token,
+        userId: event.data.userId,
+        userEmail: event.data.userEmail
+      });
+      console.log('Auth token saved via postMessage');
+      await checkAuthStatus();
+      statusDiv.textContent = `Logged in successfully as ${event.data.userEmail}!`;
+      statusDiv.className = 'status success';
+    } catch (error) {
+      console.error('Error saving auth token from postMessage:', error);
+    }
   }
 });
 

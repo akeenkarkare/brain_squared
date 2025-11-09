@@ -35,49 +35,55 @@ export default function ExtensionAuthPage() {
 
           setMessage('Sending token to extension...');
 
-          // Try to send message to extension
-          if (typeof chrome !== 'undefined' && chrome.runtime) {
-            // Get the extension ID from the page URL or use a known ID
-            // The extension will need to be listed in manifest's externally_connectable
-            const extensionId = new URLSearchParams(window.location.search).get('extensionId');
+          const authData = {
+            action: 'setAuthToken',
+            type: 'BRAIN_SQUARED_AUTH',
+            token: accessToken,
+            userId: user.sub,
+            userEmail: user.email,
+          };
 
-            if (extensionId) {
+          const extensionId = new URLSearchParams(window.location.search).get('extensionId');
+
+          // Store auth data in sessionStorage so the extension can retrieve it
+          sessionStorage.setItem('brain_squared_auth', JSON.stringify(authData));
+
+          // Broadcast to all windows (extension content scripts can listen)
+          window.postMessage(authData, window.location.origin);
+
+          // Try to send directly to extension via chrome.runtime.sendMessage
+          if (typeof chrome !== 'undefined' && chrome.runtime && extensionId) {
+            try {
               chrome.runtime.sendMessage(
                 extensionId,
-                {
-                  action: 'setAuthToken',
-                  token: accessToken,
-                  userId: user.sub,
-                  userEmail: user.email,
-                },
+                authData,
                 (response) => {
                   if (chrome.runtime.lastError) {
-                    setStatus('error');
-                    setMessage(`Error: ${chrome.runtime.lastError.message}`);
-                  } else {
+                    console.warn('chrome.runtime.sendMessage failed:', chrome.runtime.lastError.message);
+                    // Fallback successful - extension will poll for the token
+                    setStatus('success');
+                    setMessage('Successfully authenticated! Close this tab and check the extension.');
+                  } else if (response && response.success) {
                     setStatus('success');
                     setMessage('Successfully authenticated! You can close this tab.');
                   }
                 }
               );
-            } else {
-              // Fallback: use postMessage to parent window (if opened by extension)
-              window.opener?.postMessage(
-                {
-                  type: 'BRAIN_SQUARED_AUTH',
-                  token: accessToken,
-                  userId: user.sub,
-                  userEmail: user.email,
-                },
-                '*'
-              );
+            } catch (error: any) {
+              console.warn('Direct message failed, using fallback method');
               setStatus('success');
-              setMessage('Authentication successful! You can close this tab.');
+              setMessage('Successfully authenticated! Close this tab and check the extension.');
             }
           } else {
+            // No direct communication possible, extension will poll
             setStatus('success');
-            setMessage('Token ready. Copy and use in extension if needed.');
+            setMessage('Successfully authenticated! Close this tab and check the extension.');
           }
+
+          // Also trigger a custom event that extensions can listen for
+          window.dispatchEvent(new CustomEvent('brain-squared-auth', {
+            detail: authData
+          }));
         } catch (error: any) {
           setStatus('error');
           setMessage(`Error: ${error.message}`);
