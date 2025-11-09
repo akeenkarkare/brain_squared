@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
-import { uploadHistoryItems, searchHistory, getStats } from '../services/history';
-import { HistoryItem, SearchQuery, UploadResponse, SearchResponse } from '../types';
+import { uploadHistoryItems, searchHistory, getStats } from '../services/history.js';
+import { queryWithOpenRouter } from '../services/openrouter.js';
+import { HistoryItem, SearchQuery, UploadResponse, SearchResponse } from '../types/index.js';
 
 const router = Router();
 
@@ -76,7 +77,8 @@ router.post('/search', async (req: Request, res: Response) => {
 
     console.log(`User ${userId} searching for: "${query}"`);
 
-    const results = await searchHistory(query, userId, limit, minScore);
+    // Use OpenRouter for triangular synthesis
+    const { response: aiResponse, results } = await queryWithOpenRouter(query, userId, limit, minScore);
 
     const response: SearchResponse = {
       results: results,
@@ -84,7 +86,10 @@ router.post('/search', async (req: Request, res: Response) => {
       query: query,
     };
 
-    res.json(response);
+    res.json({
+      ...response,
+      aiResponse: aiResponse,
+    });
   } catch (error: any) {
     console.error('Search error:', error);
     res.status(500).json({

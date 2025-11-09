@@ -568,8 +568,22 @@ async function syncToBackend(historyItems) {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to sync to backend');
+      let errorMessage = 'Failed to sync to backend';
+      const contentType = response.headers.get('content-type');
+
+      try {
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } else {
+          // HTML error page or other content
+          errorMessage = `Backend error (${response.status}): ${response.statusText}. Your token may be invalid - try logging in again.`;
+        }
+      } catch (parseError) {
+        errorMessage = `Backend error (${response.status}): ${response.statusText}`;
+      }
+
+      throw new Error(errorMessage);
     }
 
     const result = await response.json();

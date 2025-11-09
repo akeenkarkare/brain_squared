@@ -88,14 +88,15 @@ export default function ChatPage() {
 
       const data = await response.json();
       const results = data.results || [];
+      const aiResponse = data.aiResponse || '';
 
-      // Create assistant message with search results
+      // Create assistant message with AI-synthesized response
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: results.length > 0
+        content: aiResponse || (results.length > 0
           ? `Found ${results.length} ${results.length === 1 ? 'result' : 'results'} in your browsing history:`
-          : `No results found for "${userInput}". Try different keywords or sync your browsing history via the extension.`,
+          : `No results found for "${userInput}". Try different keywords or sync your browsing history via the extension.`),
         timestamp: new Date(),
         searchResults: results,
         isSearchQuery: true,

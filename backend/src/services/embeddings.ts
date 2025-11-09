@@ -1,12 +1,23 @@
-import { pipeline } from '@xenova/transformers';
-
 let embeddingPipeline: any | null = null;
+let pipelineFunction: any = null;
 
 // Initialize the embedding model (lazy loading)
 export async function initializeEmbeddingModel(): Promise<void> {
   if (!embeddingPipeline) {
     console.log('Loading embedding model: Xenova/all-MiniLM-L6-v2...');
-    embeddingPipeline = await pipeline(
+
+    // Use dynamic import to load ESM module
+    if (!pipelineFunction) {
+      try {
+        const module = await (import('@xenova/transformers') as any);
+        pipelineFunction = module.pipeline;
+      } catch (error) {
+        console.error('Failed to import @xenova/transformers:', error);
+        throw error;
+      }
+    }
+
+    embeddingPipeline = await pipelineFunction(
       'feature-extraction',
       'Xenova/all-MiniLM-L6-v2'
     );

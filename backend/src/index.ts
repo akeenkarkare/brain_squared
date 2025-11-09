@@ -1,10 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import historyRoutes from './routes/history';
-import { initializeCollection } from './config/qdrant';
-import { initializeEmbeddingModel } from './services/embeddings';
-import { checkJwt } from './middleware/auth';
+import historyRoutes from './routes/history.js';
+import { initializeCollection } from './config/qdrant.js';
+import { initializeEmbeddingModel } from './services/embeddings.js';
+import { checkJwt } from './middleware/auth.js';
 
 dotenv.config();
 

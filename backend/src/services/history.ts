@@ -1,6 +1,6 @@
-import { qdrantClient, COLLECTION_NAME } from '../config/qdrant';
-import { generateEmbedding, createEmbeddingText } from './embeddings';
-import { HistoryItem, SearchResult } from '../types';
+import { qdrantClient, COLLECTION_NAME } from '../config/qdrant.js';
+import { generateEmbedding, createEmbeddingText } from './embeddings.js';
+import { HistoryItem, SearchResult } from '../types/index.js';
 import crypto from 'crypto';
 
 // Generate a unique ID from URL and userId

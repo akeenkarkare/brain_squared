@@ -18,7 +18,8 @@
       "Bash(find:*)",
       "Bash(curl:*)",
       "Bash(npm run clear-qdrant:*)",
-      "Bash(npm run inspect-qdrant:*)"
+      "Bash(npm run inspect-qdrant:*)",
+      "Bash(timeout 20 npm start)"
     ],
     "deny": [],
     "ask": []
