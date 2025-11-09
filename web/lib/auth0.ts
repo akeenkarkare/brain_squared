@@ -4,7 +4,7 @@ export const auth0 = new Auth0Client({
   domain: process.env.AUTH0_DOMAIN!,
   clientId: process.env.AUTH0_CLIENT_ID!,
   clientSecret: process.env.AUTH0_CLIENT_SECRET!,
-  appBaseUrl: process.env.APP_BASE_URL || 'http://localhost:3000',
+  appBaseUrl: process.env.APP_BASE_URL || 'http://45.32.221.76:3000',
   secret: process.env.AUTH0_SECRET!,
   authorizationParameters: {
     // Only include audience if the API exists in Auth0 dashboard

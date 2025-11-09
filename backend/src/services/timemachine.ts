@@ -354,7 +354,7 @@ Remember: Be selective! Only include pages that are actually relevant to "${topi
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-        'HTTP-Referer': process.env.APP_BASE_URL || 'http://localhost:3000',
+        'HTTP-Referer': process.env.APP_BASE_URL || 'http://45.32.221.76:3000',
         'X-Title': 'Brain Squared - Time Machine',
       },
       body: JSON.stringify({

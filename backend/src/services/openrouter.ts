@@ -94,7 +94,7 @@ Please give them a friendly, conversational response about what they were explor
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-        'HTTP-Referer': process.env.APP_BASE_URL || 'http://localhost:3000',
+        'HTTP-Referer': process.env.APP_BASE_URL || 'http://45.32.221.76:3000',
         'X-Title': 'Brain Squared',
       },
       body: JSON.stringify({
@@ -220,7 +220,7 @@ Please give them a friendly, conversational response about what they were explor
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-        'HTTP-Referer': process.env.APP_BASE_URL || 'http://localhost:3000',
+        'HTTP-Referer': process.env.APP_BASE_URL || 'http://45.32.221.76:3000',
         'X-Title': 'Brain Squared',
       },
       body: JSON.stringify({
