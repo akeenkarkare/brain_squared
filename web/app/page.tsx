@@ -101,9 +101,24 @@ export default function Home() {
           {user ? (
             <span className="text-[#ff6b35]">&gt; NEURAL_LINK_ESTABLISHED</span>
           ) : (
-            <span>&gt; Next-Gen AI Interface</span>
+            <span>&gt; Login to establish link...</span>
           )}
         </p>
+
+        {/* Description */}
+        {!user && (
+          <div className="mb-16 max-w-3xl text-center">
+            <p className="text-lg text-[#a0a0a0] font-mono leading-relaxed mb-6">
+              Ever searched up an important article last week, only to forget where it was when you needed it most?
+            </p>
+            <p className="text-lg text-[#ff6b35] font-mono leading-relaxed mb-6">
+              Brain² (BrainSquared) instantly finds it for you. By securely analyzing your browsing history and chats, it recalls exactly what you were looking for in seconds.
+            </p>
+            <p className="text-lg text-[#a0a0a0] font-mono leading-relaxed">
+              No more endless tab-hopping or keyword guessing; just context-aware memory for your browser.
+            </p>
+          </div>
+        )}
 
         {/* CTA Buttons */}
         <div className="flex gap-6 justify-center flex-wrap">
