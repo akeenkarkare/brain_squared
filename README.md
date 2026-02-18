@@ -1,6 +1,6 @@
 # Brain Squared
 
-A multi-component project with web frontend, backend, and Chrome extension.
+A multi-component project with web frontend, backend, and Chrome extension. We won SBU Hacks with this yay
 
 ## Project Structure
 
